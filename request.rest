@@ -1,0 +1,79 @@
+//create a new post
+###
+POST http://localhost:3000/posts
+Content-Type: application/json
+
+{
+    "title": "test1", 
+    "SenderId": "33", 
+    "content": "hello world"
+}
+
+
+//get all posts
+###
+GET http://localhost:3000/posts
+
+
+//get post by id
+###
+GET http://localhost:3000/posts/674060662936d54632477a58
+
+
+//get post by senderId
+###
+GET http://localhost:3000/posts/?SenderId=33
+
+//update post by id
+###
+PUT http://localhost:3000/posts/674060662936d54632477a58
+
+Content-Type: application/json
+
+{
+    "title": "Good day",
+    "SenderId": "55", 
+    "content": "beautiful day"
+}
+
+//create a new comment
+###
+POST http://localhost:3000/comments
+Content-Type: application/json
+
+
+{
+    "postId": "674060662936d54632477a58", 
+    "content": "Hello world", 
+    "username": "natan"
+}
+
+
+//get all comments
+###
+
+GET http://localhost:3000/comments
+
+
+//update comment by id
+###
+PUT http://localhost:3000/comments/674353f402429aaee563dae3
+Content-Type: application/json
+
+
+{
+    "postId": "674060662936d54632477a58", 
+    "content": "hello", 
+    "username": "natan"
+}
+
+
+//delete comment by id
+###
+DELETE  http://localhost:3000/comments/674353f402429aaee563dae7
+
+
+
+//get comment by postId
+###
+GET http://localhost:3000/comments/?postId=674060662936d54632477a58
