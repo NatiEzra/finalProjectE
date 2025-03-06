@@ -39,6 +39,7 @@ const Register: React.FC = () => {
   
       if (response.ok) {
         alert("Registration successful!");
+        window.location.href = "/login";
       } else {
         alert("Registration failed: " + result.message);
       }

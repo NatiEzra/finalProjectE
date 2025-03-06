@@ -100,7 +100,10 @@ const login = async (req: Request, res: Response) => {
             {
                 accessToken: tokens.accessToken,
                 refreshToken: tokens.refreshToken,
-                _id: userExists._id
+                _id: userExists._id,
+                image: userExists.image,
+                name: userExists.name,
+                email: userExists.email
             });
 
 
