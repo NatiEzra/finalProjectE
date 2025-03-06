@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema<interUser>({
   },
   image: {
     type: String,
-    required: true,
+    default: "",
   },
   name: {
     type: String,

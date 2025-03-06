@@ -16,6 +16,8 @@ beforeAll(async () => {
   await request(app).post("/auth/register").send({
     email: "test@user.com",
     password: "testpassword",
+    image: "testimage1",
+    name: "testname1",
     
   });
   const res = await request(app).post("/auth/login")

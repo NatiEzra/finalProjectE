@@ -24,7 +24,6 @@ beforeAll(async () => {
   .send({
     email: "test@user.com",
     password: "testpassword",
-    image: "testimage1",
     name: "testname1",
     
   });
