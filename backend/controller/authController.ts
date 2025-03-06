@@ -10,8 +10,8 @@ const register = async (req: Request, res: Response) => {
     const email= req.body.email;
     const password= req.body.password;
     const salt= await bcrypt.genSalt(10);
-    const image= req.body.image;
     const name= req.body.name;
+    const imagePath = req.file ? req.file.path : null; // Extract uploaded image
     var hashedPassword;
     if(password){
         hashedPassword= await bcrypt.hash(password,salt);
@@ -28,7 +28,7 @@ const register = async (req: Request, res: Response) => {
         const savedUser = await userModel.create({
             email: req.body.email,
             password: hashedPassword,
-            image: image,
+            image: imagePath,
             name: name
         });
         res.status(200).send(savedUser);
@@ -100,7 +100,10 @@ const login = async (req: Request, res: Response) => {
             {
                 accessToken: tokens.accessToken,
                 refreshToken: tokens.refreshToken,
-                _id: userExists._id
+                _id: userExists._id,
+                image: userExists.image,
+                name: userExists.name,
+                email: userExists.email
             });
 
 
