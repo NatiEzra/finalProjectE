@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "../Register.css";
+import '../css/registerPage.css';
+import { Link } from "react-router-dom";
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -56,10 +57,8 @@ const Register: React.FC = () => {
 
           <button type="submit" className="register-button">Sign Up</button>
         </form>
-
-        <p className="login-link">
-          Already have an account? <a href="/login">Log in</a>
-        </p>
+        
+       <Link  to="/login" className="login-link">Already have an acount?</Link>
       </div>
     </div>
   );

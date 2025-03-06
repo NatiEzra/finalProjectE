@@ -22,7 +22,7 @@ const LoginPage: React.FC = () => {
             <span className="or-text">or</span>
             <div className="line"></div>
           </div>
-  
+          <Link to="/register" className="register-link">Register</Link>
           
         </div>
       </div>
