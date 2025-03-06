@@ -29,16 +29,7 @@ const FeedPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="feed-wrapper">
-      <nav className="navbar">
-        <h1 className="songify-logo">Songify</h1>
-        <div className="nav-links">
-          <Link to="/home" className="nav-button">Feed</Link>
-          <Link to="/my-posts" className="nav-button">My Posts</Link>
-          <button className="logout-button">Logout</button>
-        </div>
-      </nav>
-
+    <div className="feed-wrapper">    
       <div className="feed-container">
         <h2 className="feed-title">Feed</h2>
         {posts.length === 0 ? (

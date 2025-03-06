@@ -1,0 +1,50 @@
+.create-post-container {
+    width: 600px;
+    height: 600px;
+    margin: 100px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  h2 {
+    color: #FFA500;
+    margin-bottom: 20px;
+  }
+  
+  .create-post-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .post-input,
+  .post-textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .post-textarea {
+    height: 120px;
+    resize: none;
+  }
+  
+  .submit-button {
+    background-color: #FFA500;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .submit-button:hover {
+    background-color: #e66200;
+  }
+  
