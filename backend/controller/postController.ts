@@ -84,14 +84,24 @@ const deletePost= async (req:Request, res:Response) => {
 };
 const likePost = async (req:Request, res:Response) => {
     const { id } = req.params;
-    const userId = req.body.userId;
+    const userId = req.params.userId;
+    var flag = false;
     try {
         const post = await postModel.findById(id);
         if (!post) {
             res.status(404).send('post not found');
         }
         else{
-            post.userLikes.push(req.body.userId);
+            for (let i = 0; i < post.userLikes.length; i++) {
+                if (post.userLikes[i] == req.params.userId) {
+                    flag = true;
+                }
+            }
+            if (flag) {
+                res.status(400).send('user already liked this post');
+                return;
+            }
+            post.userLikes.push(userId);
             await post.save();
             res.status(200).json(post);
         }
@@ -110,7 +120,7 @@ const unlikePost = async (req:Request, res:Response) => {
         }
         else{
             for (let i = 0; i < post.userLikes.length; i++) {
-                if (post.userLikes[i] == req.body.userId) {
+                if (post.userLikes[i] == req.params.userId) {
                     post.userLikes.splice(i, 1);
                     await post.save();
                     res.status(200).json(post);

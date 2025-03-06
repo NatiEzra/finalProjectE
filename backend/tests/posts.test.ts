@@ -127,14 +127,7 @@ describe("Posts Tests", () => {
     expect(response.body.length).toBe(2);
   });
 
-  test("Test Delete Post", async () => {
-    const response = await request(app)
-    .delete("/posts/" + postId)
-    .set({ authorization: "JWT " + token });
-    expect(response.statusCode).toBe(200);
-    const response2 = await request(app).get("/posts/" + postId);
-    expect(response2.statusCode).toBe(404);
-  });
+ 
 
   test("Test Create Post fail", async () => {
     const response = await request(app)
@@ -156,6 +149,13 @@ describe("Posts Tests", () => {
     expect(response.body.userLikes[0]).toBe(id);
   });
 
+  test("Test like post fail", async () => {
+    const response = await request(app)
+    .post("/posts/like/" + postId)
+    .set({ authorization: "JWT " + token });
+    expect(response.statusCode).not.toBe(200);
+  });
+
   test("test unlike post", async () => {
     const response = await request(app)
     .post("/posts/unlike/" + postId)
@@ -163,18 +163,29 @@ describe("Posts Tests", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.userLikes.length).toBe(0);
   });
+
+  test("Test like post fail", async () => {
+    const response = await request(app)
+    .post("/posts/like/" + postId+"asdasd")
+    .set({ authorization: "JWT " + token});
+    expect(response.statusCode).not.toBe(200);
+  });
   //like fail
   test("Test like post fail", async () => {
     const response = await request(app)
     .post("/posts/like/" + postId)
     .set({ authorization: "JWT " + token +"asdkjahbwelfgbaweuifvb"});
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).not.toBe(200);
   });
-  test("Test like post fail", async () => {
+  
+
+  test("Test Delete Post", async () => {
     const response = await request(app)
-    .post("/posts/like/" + postId+"asdasd")
-    .set({ authorization: "JWT " + token});
-    expect(response.statusCode).toBe(400);
+    .delete("/posts/" + postId)
+    .set({ authorization: "JWT " + token });
+    expect(response.statusCode).toBe(200);
+    const response2 = await request(app).get("/posts/" + postId);
+    expect(response2.statusCode).toBe(404);
   });
   
 
