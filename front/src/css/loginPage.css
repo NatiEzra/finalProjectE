@@ -1,0 +1,83 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .songify-logo{
+    color: #ff7300; 
+
+  }
+  .login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .login-box {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 350px;
+  }
+  
+  .login-input {
+    width: 100%; 
+    max-width: 320px; 
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    display: block; 
+    box-sizing: border-box; 
+  }
+  
+  .login-button {
+    width: 100%;
+    background-color: #ff7300; 
+    color: white;
+    font-size: 16px;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .login-button:hover {
+    background-color: #e66000; 
+  }
+  
+  .Forgot-password {
+    display: block;
+    color: #ff7300; 
+    text-decoration: none;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .Forgot-password:hover {
+    text-decoration: underline;
+  }
+  
+  .create-account-button {
+    width: 100%;
+    background-color: #b2b6b2;
+    color: white;
+    font-size: 16px;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .create-account-button:hover {
+    background-color: #585858;
+  }
