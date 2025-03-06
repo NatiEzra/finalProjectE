@@ -16,15 +16,18 @@ beforeAll(async () => {
   await request(app).post("/auth/register").send({
     email: "test@user.com",
     password: "testpassword",
+    image: "testimage1",
+    name: "testname1",
     
   });
   const res = await request(app).post("/auth/login")
   .send({
     email: "test@user.com",
     password: "testpassword",
+    image: "testimage1",
+    name: "testname1",
     
   });
-  console.log("hello " + res.body.accessToken);
   token = res.body.accessToken;
   id = res.body._id;
   expect(token).toBeDefined();
@@ -51,6 +54,7 @@ describe("Posts Tests", () => {
       title: "Test Post-1",
       content: "Test Content-1",
       SenderId: "TestSenderId-1",
+      userLikes: [],
     });
     expect(response.statusCode).toBe(201);
     expect(response.body.title).toBe("Test Post-1");
@@ -142,4 +146,37 @@ describe("Posts Tests", () => {
     .set({ authorization: "JWT " + token });
     expect(response.statusCode).toBe(400);
   });
+
+  //add like to post
+  test("Test like post", async () => {
+    const response = await request(app)
+    .post("/posts/like/" + postId)
+    .set({ authorization: "JWT " + token });
+    expect(response.statusCode).toBe(200);
+    expect(response.body.userLikes.length).toBe(1);
+    expect(response.body.userLikes[0]).toBe(id);
+  });
+
+  test("test unlike post", async () => {
+    const response = await request(app)
+    .post("/posts/unlike/" + postId)
+    .set({ authorization: "JWT " + token });
+    expect(response.statusCode).toBe(200);
+    expect(response.body.userLikes.length).toBe(0);
+  });
+  //like fail
+  test("Test like post fail", async () => {
+    const response = await request(app)
+    .post("/posts/like/" + postId)
+    .set({ authorization: "JWT " + token +"asdkjahbwelfgbaweuifvb"});
+    expect(response.statusCode).toBe(400);
+  });
+  test("Test like post fail", async () => {
+    const response = await request(app)
+    .post("/posts/like/" + postId+"asdasd")
+    .set({ authorization: "JWT " + token});
+    expect(response.statusCode).toBe(400);
+  });
+  
+
 });

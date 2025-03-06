@@ -10,6 +10,8 @@ const register = async (req: Request, res: Response) => {
     const email= req.body.email;
     const password= req.body.password;
     const salt= await bcrypt.genSalt(10);
+    const image= req.body.image;
+    const name= req.body.name;
     var hashedPassword;
     if(password){
         hashedPassword= await bcrypt.hash(password,salt);
@@ -26,6 +28,8 @@ const register = async (req: Request, res: Response) => {
         const savedUser = await userModel.create({
             email: req.body.email,
             password: hashedPassword,
+            image: image,
+            name: name
         });
         res.status(200).send(savedUser);
     } catch (error) {
@@ -56,7 +60,6 @@ const generateToken = (userId: string): tTokens | null => {
     },
         process.env.TOKEN_SECRET,
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRES});
-        console.log("access token is: "+accessToken);
     return {
         accessToken: accessToken,
         refreshToken: refreshToken
@@ -116,7 +119,6 @@ type Payload = {
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.header('authorization');
     const token = authHeader && authHeader.split(' ')[1];
-    console.log("token is: "+token);
     if (token == null) {
         res.sendStatus(401);
         return;
@@ -228,9 +230,37 @@ const refresh = async (req: Request, res: Response) => {
         res.status(400).send("fail");
     }
 }
+
+const edit = async (req: Request, res: Response) => {
+    try {
+        const user = await userModel.findById(req.body._id);
+        const username= req.body.username;
+        if(username==""){
+            res.status(400).send("fail");
+            return;
+        }
+        if (!user) {
+            res.status(400).send("fail");
+            return;
+        }
+        var refreshToken=req.body.refreshToken;
+        if (await verifyRefreshToken(refreshToken)){
+            //user.set(req.body);
+            user.image=req.body.image;
+            user.name=req.body.name;
+             await user.save();
+            res.status(200).send(user);
+        }
+        
+        
+    } catch (err) {
+        res.status(400).send("fail");
+    }
+}
 export default  {
     register,
     login,
     refresh,
     logout,
+    edit,
 };

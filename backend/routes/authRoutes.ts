@@ -170,4 +170,7 @@ router.post('/refresh',authController.refresh);
  *         description: Server error
  */
 router.post('/logout',authController.logout);
+
+
+router.put('/edit',authController.edit);
 export default router;

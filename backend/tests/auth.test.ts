@@ -29,6 +29,8 @@ type User = interUser & {
 const testUser: User = {
   email: "test@user.com",
   password: "testpassword",
+  image: "testimage1",
+  name: "testname1",
 }
 
 describe("Auth Tests", () => {
@@ -90,6 +92,8 @@ describe("Auth Tests", () => {
     });
     expect(response2.statusCode).not.toBe(200);
   });
+
+  
 
   test("Auth test me", async () => {
     const response = await request(app).post("/posts").send({
@@ -188,4 +192,44 @@ describe("Auth Tests", () => {
     });
     expect(response4.statusCode).toBe(201);
   });
+
+
+  test("Auth test edit user", async () => {
+    //login
+    const response = await request(app).post("/auth/login").send(testUser);
+    expect(response.statusCode).toBe(200);
+    testUser.accessToken = response.body.accessToken;
+    testUser.refreshToken = response.body.refreshToken;
+    testUser._id = response.body._id;
+    const response3 = await request(app).put("/auth/edit").send({
+      name: "testname",
+      image: "testimage",
+      _id: testUser._id,
+      refreshToken: testUser.refreshToken,
+    });
+    expect(response3.statusCode).toBe(200);
+    expect(response3.body.image).toBe("testimage");
+    expect(response3.body.name).toBe("testname");
+    
+    
+  });
+  test("Auth test edit user fail", async () => {
+    const response2 = await request(app).put("/auth/edit").send({
+      name:"",
+      image: "testimage",
+      _id: testUser._id,
+      refreshToken: testUser.refreshToken,
+    });
+    expect(response2.statusCode).not.toBe(200);
+  });
+  test("Auth test edit user fail due to invalid token", async () => {
+    const response2 = await request(app).put("/auth/edit").send({
+      name:"testname",
+      image: "testimage",
+      _id: testUser._id,
+      refreshToken: testUser.refreshToken+"sdf"
+    });
+    expect(response2.statusCode).not.toBe(200);
+  }
+  );
 });

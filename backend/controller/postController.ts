@@ -82,12 +82,56 @@ const deletePost= async (req:Request, res:Response) => {
         res.status(400).send(error);
     }
 };
+const likePost = async (req:Request, res:Response) => {
+    const { id } = req.params;
+    const userId = req.body.userId;
+    try {
+        const post = await postModel.findById(id);
+        if (!post) {
+            res.status(404).send('post not found');
+        }
+        else{
+            post.userLikes.push(req.body.userId);
+            await post.save();
+            res.status(200).json(post);
+        }
+        
+    } catch (error) {
+        res.status(400).send(error);
+    }
+}
+const unlikePost = async (req:Request, res:Response) => {
+    const { id } = req.params;
+    try {
+        const post = await postModel.findById(id);
+        if (!post) {
+            res.status(404).send('post not found');
+            return;
+        }
+        else{
+            for (let i = 0; i < post.userLikes.length; i++) {
+                if (post.userLikes[i] == req.body.userId) {
+                    post.userLikes.splice(i, 1);
+                    await post.save();
+                    res.status(200).json(post);
+                    return;
+                }
+            }
+            
+        }
+        
+    } catch (error) {
+        res.status(400).send(error);
+    }
+}
 
  export default {
     createPost,
     getAllPosts,
     getPostById,
     updatePost,
-    deletePost
+    deletePost,
+    likePost,
+    unlikePost,
     
 };

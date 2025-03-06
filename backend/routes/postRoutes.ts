@@ -180,5 +180,9 @@ router.put('/:id',authMiddleware, postController.updatePost);
  *         description: Server error
  */
 router.delete('/:id',authMiddleware, postController.deletePost);
+//add like to post
+router.post('/like/:id',authMiddleware, postController.likePost);
+//remove like from post
+router.post('/unlike/:id',authMiddleware, postController.unlikePost);
 
 export default router;

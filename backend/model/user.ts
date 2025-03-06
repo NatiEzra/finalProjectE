@@ -5,6 +5,8 @@ export interface interUser {
   password: string;
   _id?: string;
   refreshToken?: string[];
+  image: string;
+  name: string;
 }
 
 const userSchema = new mongoose.Schema<interUser>({
@@ -20,7 +22,15 @@ const userSchema = new mongoose.Schema<interUser>({
   refreshToken: {
     type: [String],
     default: [],
-  }
+  },
+  image: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
 });
 
 const userModel = mongoose.model<interUser>("Users", userSchema);

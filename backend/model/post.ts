@@ -12,6 +12,10 @@ const postSchema = new mongoose.Schema({
     content: {
         type:  String
         },
+    userLikes:{
+        type: Array,
+        default: []
+    }
 });
 
 const postModel = mongoose.model('post', postSchema);
