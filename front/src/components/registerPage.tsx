@@ -13,10 +13,40 @@ const Register: React.FC = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("User Registered:", formData);
-    // Add API call logic here
+    const formDataToSend = new FormData();
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("password", formData.password);
+    formDataToSend.append("name", formData.name);
+    const fileInput = document.querySelector("input[type='file']") as HTMLInputElement;
+    if (fileInput.files && fileInput.files[0]) {
+    formDataToSend.append("image", fileInput.files[0]); 
+    }
+    
+
+
+    try {
+      const response = await fetch("http://localhost:3000/auth/register", {
+        method: "POST",
+        body: formDataToSend,
+      });
+      
+  
+      const result = await response.json();
+      console.log("Server Response:", result);
+      
+  
+      if (response.ok) {
+        alert("Registration successful!");
+      } else {
+        alert("Registration failed: " + result.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong!");
+    }
+    
   };
 
   return (
@@ -29,6 +59,7 @@ const Register: React.FC = () => {
           <input
             type="text"
             name="name"
+            minLength={2}
             placeholder="Full Name"
             className="register-input"
             value={formData.name}
@@ -47,6 +78,7 @@ const Register: React.FC = () => {
           <input
             type="password"
             name="password"
+            minLength={4}
             placeholder="Password"
             className="register-input"
             value={formData.password}

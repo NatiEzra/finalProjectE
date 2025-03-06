@@ -1,6 +1,23 @@
 import express from 'express';
 import authController from '../controller/authController';
+import multer from 'multer';
+import path from 'path';
 const router = express.Router();
+
+
+// Set storage for uploaded files
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "images"); // Save images inside 'images' folder
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+    },
+  });
+
+// Multer upload middleware
+const upload = multer({ storage: storage });
+
 
 
 /**
@@ -68,7 +85,7 @@ const router = express.Router();
 * 
 */
 
-router.post('/register',authController.register);
+router.post('/register', upload.single("image") ,authController.register);
 
 
 
