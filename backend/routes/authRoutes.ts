@@ -170,6 +170,28 @@ router.post('/refresh',authController.refresh);
  *         description: Server error
  */
 router.post('/logout',authController.logout);
+/**
+ * @swagger
+ * /auth/edit:
+ *   put:
+ *     summary: Edit user information
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *              image:
+ *                type: string
+ *              required: false
+ *               example: ./images/123456.jpg
+ *              name:
+ *              type: string
+ *             required: true
+ *             example: Bob
+ */
 
 
 router.put('/edit',authController.edit);

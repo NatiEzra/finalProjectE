@@ -181,8 +181,52 @@ router.put('/:id',authMiddleware, postController.updatePost);
  */
 router.delete('/:id',authMiddleware, postController.deletePost);
 //add like to post
+
+/**
+ * @swagger
+ * /posts/like/{id}:
+ *   post:
+ *     summary: Add like to post
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The post ID
+ *     responses:
+ *       200:
+ *         description: The post was successfully liked
+ *       400:
+ *         description: Post not found
+ */
 router.post('/like/:id',authMiddleware, postController.likePost);
 //remove like from post
+
+/**
+ * @swagger
+ * /posts/unlike/{id}:
+ *   post:
+ *     summary: Remove like from post
+ *     tags: [Posts]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The post ID
+ *     responses:
+ *       200:
+ *         description: The like was successfully removed from the post
+ *       400:
+ *         description: Post not found
+ */
 router.post('/unlike/:id',authMiddleware, postController.unlikePost);
 
 export default router;
