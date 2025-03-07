@@ -24,8 +24,15 @@ const getAllPosts= async (req:Request, res:Response) => {
     }
     else{
     try {
-    const posts = await PostModel.find();
-    res.status(200).send(posts);
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+        const posts = await PostModel.find()
+        .sort({ createdAt: -1 }) // Optional: Sort by latest
+        .skip(skip)
+        .limit(limit);
+        const totalPosts = await PostModel.countDocuments(); // Total posts count
+        res.status(200).send(posts);
     } catch (error) {
         res.status(400).send(error);
     }
