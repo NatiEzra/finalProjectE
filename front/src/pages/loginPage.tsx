@@ -1,7 +1,6 @@
-import React, {useState} from "react";
-import { useNavigate,Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import "../css/loginPage.css";
-import Register from "./registerPage";
 
 
 
@@ -40,7 +39,7 @@ const LoginPage: React.FC = () => {
           localStorage.setItem('name', result.name);
           localStorage.setItem('image', result.image);
           localStorage.setItem('id', result._id);
-          window.location.href = "/register";
+          window.location.href = "/home";
         } else {
           alert("Login failed: " + result.message);
         }

@@ -1,0 +1,100 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+
+.feed-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.logout-button {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  margin-right: 25px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.logout-button:hover {
+  background-color: #c9302c;
+}
+
+.feed-container {
+  width: 100%;
+  width: 600px; 
+  height: 600px;
+  margin: 50px auto; /* Adjust for navbar */
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feed-title {
+  text-align: center;
+  color: #FFA500; /* Match the orange color */
+  margin-bottom: 20px;
+  font-size: 24px; /* Match the font size of the profile title */
+}
+
+.no-posts {
+  text-align: center;
+  color: #777;
+}
+
+.post-card {
+  background: #fff;
+  padding: 20px; /* Increased padding to match profile card */
+  margin-bottom: 20px; /* Increased margin to match profile card */
+  border-radius: 8px; /* Match the border radius of the profile card */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-user {
+  font-size: 18px; /* Increased font size */
+  font-weight: bold;
+  color: #FFA500; /* Match the orange color */
+}
+
+.post-content {
+  margin: 10px 0;
+  font-size: 16px; /* Increased font size */
+  color: #333;
+}
+
+.post-image {
+  width: 100%;
+  border-radius: 8px; /* Match the border radius of the profile card */
+  margin-top: 10px;
+}
+
+.post-actions {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #555;
+  margin-top: 10px;
+}
+
+.nav-button {
+  background-color: transparent;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.nav-button:hover {
+  text-decoration: underline;
+}
