@@ -5,6 +5,8 @@ import App from './components/App.tsx'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+
 
 const rootElement = document.getElementById("root");
 

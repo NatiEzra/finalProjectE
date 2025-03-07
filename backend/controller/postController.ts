@@ -105,6 +105,7 @@ const likePost = async (req:Request, res:Response) => {
             for (let i = 0; i < post.userLikes.length; i++) {
                 if (post.userLikes[i] == req.params.userId) {
                     flag = true;
+                    break;
                 }
             }
             if (flag) {
