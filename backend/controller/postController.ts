@@ -3,13 +3,14 @@ import PostModel from '../model/post';
 import postModel from "../model/post";
 
 const createPost = async (req:Request, res:Response) => {
+    
+    const imagePath = req.file ? req.file.path : null; // Extract uploaded image
     const postBody = req.body;
-    console.log(postBody.SenderId+"check for natan");
+    postBody.image = imagePath;
     try {
     const post = await PostModel.create(postBody);
     res.status(201).send(post);
     } catch (error) {
-        console.log("here1");
         res.status(400).send(error);
     }
 };

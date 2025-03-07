@@ -4,15 +4,24 @@ import "../css/feedPage.css";
 
 interface Post {
   id: string;
-  user: string;
+  SenderId: string;
+  title: string;
   content: string;
   image?: string;
-  likes: number;
+  userLikes: Array<string>;
   comments: number;
 }
 
+interface User{
+  _id: string;
+  name: string;
+  email: string;
+  image: string;
+}
 const FeedPage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -25,8 +34,23 @@ const FeedPage: React.FC = () => {
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/auth/getAllUsers");
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
     fetchPosts();
+    fetchUsers();
   }, []);
+
+  const getUserInfo = (SenderId: string) => {
+    return users.find((user) =>  user._id=== SenderId);
+  };
 
   return (
     <div className="feed-wrapper">    
@@ -37,11 +61,17 @@ const FeedPage: React.FC = () => {
         ) : (
           posts.map((post) => (
             <div key={post.id} className="post-card">
-              <h3 className="post-user">{post.user}</h3>
+              <div className="post-header">
+              {getUserInfo(post.SenderId)?.image && (
+              <img src={`http://localhost:3000/${getUserInfo(post.SenderId)?.image}`} alt="User" className="user-avatar" />
+              )}
+              <h3 className="post-user">{getUserInfo(post.SenderId)?.name || "Unknown User"}</h3>
+               </div>
+              <h3 className="post-title">{post.title}</h3>
               <p className="post-content">{post.content}</p>
-              {post.image && <img src={post.image} alt="Post" className="post-image" />}
+              {post.image && <img src={`http://localhost:3000/${post.image}`} alt="Post" className="post-image" />}
               <div className="post-actions">
-                <span>👍 {post.likes} Likes</span>
+                <span>👍 {post.userLikes.length} Likes</span>
                 <span>💬 {post.comments} Comments</span>
               </div>
             </div>

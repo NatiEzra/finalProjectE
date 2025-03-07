@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/posts", postRoutes);
 app.use("/comments",commentRoutes);
 app.use("/auth", authRoutes);
-app.use("/uploads", express.static("uploads"));
+app.use("/images", express.static("images"));
 
 
 

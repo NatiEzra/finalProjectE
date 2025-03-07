@@ -3,6 +3,22 @@ const router = express.Router();
 import postController from '../controller/postController';
 import {authMiddleware} from '../controller/authController';
 import swaggerJSDoc from 'swagger-jsdoc';
+import multer from 'multer';
+import path from 'path';
+
+// Set storage for uploaded files
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "images"); // Save images inside 'images' folder
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+    },
+  });
+
+// Multer upload middleware
+const upload = multer({ storage: storage });
+
 
 
 
@@ -68,7 +84,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
  *         description: Server error
  */
 
-router.post('/', authMiddleware, postController.createPost.bind(postController));
+router.post('/', authMiddleware, upload.single("image"), postController.createPost.bind(postController));
 //router.post('/', authMiddleware ,postController.createPost);
 
 /**

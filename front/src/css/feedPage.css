@@ -98,3 +98,11 @@ body {
 .nav-button:hover {
   text-decoration: underline;
 }
+
+.user-avatar {
+  width: 100px; /* Increased size */
+    height: 100px; /* Increased size */
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
