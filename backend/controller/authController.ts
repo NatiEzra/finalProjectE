@@ -260,10 +260,20 @@ const edit = async (req: Request, res: Response) => {
         res.status(400).send("fail");
     }
 }
+
+const getUsers = async (req: Request, res: Response) => {
+    try {
+        const users = await userModel.find();
+        res.status(200).send(users);
+    } catch (err) {
+        res.status(400).send("fail");
+    }
+}
 export default  {
     register,
     login,
     refresh,
     logout,
     edit,
+    getUsers,
 };

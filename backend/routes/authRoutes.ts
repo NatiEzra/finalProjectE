@@ -212,4 +212,8 @@ router.post('/logout',authController.logout);
 
 
 router.put('/edit',authController.edit);
+
+
+
+router.get('/getAllUsers',authController.getUsers);
 export default router;

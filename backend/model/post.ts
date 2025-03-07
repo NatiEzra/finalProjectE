@@ -15,6 +15,10 @@ const postSchema = new mongoose.Schema({
     userLikes:{
         type: Array,
         default: []
+    },
+    image:{
+        type: String,
+        default: ""
     }
 });
 

@@ -1,8 +1,9 @@
-body {
+html, body {
   font-family: Arial, sans-serif;
   background-color: #f0f2f5;
   margin: 0;
   padding: 0;
+  height:100%;
 }
 
 .feed-wrapper {
@@ -97,4 +98,12 @@ body {
 
 .nav-button:hover {
   text-decoration: underline;
+}
+
+.user-avatar {
+  width: 100px; /* Increased size */
+    height: 100px; /* Increased size */
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
 }

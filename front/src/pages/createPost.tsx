@@ -18,25 +18,28 @@ const CreatePostPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!userId) {
+    const postDataToSend = new FormData();
+    postDataToSend.append("title", postData.title);
+    postDataToSend.append("content", postData.content);
+    if (userId) {
+      postDataToSend.append("SenderId", userId);
+    } else {
       alert("User not found! Please log in.");
       return;
     }
+      const fileInput = document.querySelector("input[type='file']") as HTMLInputElement;
+      if (fileInput.files && fileInput.files[0]) {
+      postDataToSend.append("image", fileInput.files[0]); 
+      }
+    
 
     try {
       const response = await fetch("http://localhost:3000/posts/", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `JWT ${token}`,
         },
-        body: JSON.stringify({
-          title: postData.title,
-          content: postData.content,
-          SenderId: userId,
-          userLikes: [],
-        }),
+        body: postDataToSend,
       });
 
       const result = await response.json();
@@ -73,6 +76,7 @@ const CreatePostPage: React.FC = () => {
           required
           className="post-textarea"
         />
+        <input type="file" accept="image/*" className="post-input" />
         <button type="submit" className="submit-button">Create Post</button>
       </form>
     </div>

@@ -69,6 +69,11 @@ describe("Auth Tests", () => {
     testUser.refreshToken = refreshToken;
     testUser._id = response.body._id;
   });
+  //test get all users
+  test("Auth test get all users", async () => {
+    const response = await request(app).get("/auth/getAllUsers");
+    expect(response.statusCode).toBe(200);
+  });
 
   test("Check tokens are not the same", async () => {
     const response = await request(app).post("/auth/login").send(testUser);

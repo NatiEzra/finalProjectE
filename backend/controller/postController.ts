@@ -3,13 +3,14 @@ import PostModel from '../model/post';
 import postModel from "../model/post";
 
 const createPost = async (req:Request, res:Response) => {
+    
+    const imagePath = req.file ? req.file.path : null; // Extract uploaded image
     const postBody = req.body;
-    console.log(postBody.SenderId+"check for natan");
+    postBody.image = imagePath;
     try {
     const post = await PostModel.create(postBody);
     res.status(201).send(post);
     } catch (error) {
-        console.log("here1");
         res.status(400).send(error);
     }
 };
@@ -23,8 +24,15 @@ const getAllPosts= async (req:Request, res:Response) => {
     }
     else{
     try {
-    const posts = await PostModel.find();
-    res.status(200).send(posts);
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const skip = (page - 1) * limit;
+        const posts = await PostModel.find()
+        .sort({ createdAt: -1 }) // Optional: Sort by latest
+        .skip(skip)
+        .limit(limit);
+        const totalPosts = await PostModel.countDocuments(); // Total posts count
+        res.status(200).send(posts);
     } catch (error) {
         res.status(400).send(error);
     }
