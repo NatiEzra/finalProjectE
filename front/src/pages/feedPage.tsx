@@ -86,65 +86,55 @@ const FeedPage: React.FC = () => {
     const token = localStorage.getItem("accessToken");
   
     if (!token) {
-      alert("You must be logged in to like/unlike a post.");
-      return;
+        alert("You must be logged in to like/unlike a post.");
+        return;
     }
   
     try {
-      const response = await fetch(`http://localhost:3000/posts/like/${postId}`, {
-        method: "POST",
-        headers: {
-          Authorization: `JWT ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-  
-      let result;
-      try {
-        result = await response.json();
-      } catch {
-        result = {};
-      }
-  
-      if (response.ok) {
-        alert("Post liked successfully!");
-        return;
-      }
-  
-      // If user already liked the post, try to unlike
-      if (result.message === "user already liked this post") {
-        console.log("User already liked, trying to unlike...");
-  
-        const response2 = await fetch(`http://localhost:3000/posts/unlike/${postId}`, {
-          method: "POST",
-          headers: {
-            Authorization: `JWT ${token}`,
-            "Content-Type": "application/json",
-          },
+        const response = await fetch(`http://localhost:3000/posts/like/${postId}`, {
+            method: "POST",
+            headers: {
+                Authorization: `JWT ${token}`,
+                "Content-Type": "application/json",
+            },
         });
-  
-        let result2;
-        try {
-          result2 = await response2.json();
-        } catch {
-          result2 = {};
+
+        const result = await response.json(); // לוודא שהתשובה תמיד מנותחת
+
+        if (response.ok) {
+            alert("Post liked successfully!");
+            return;
         }
-  
-        if (response2.ok) {
-          alert("Post unliked successfully!");
-        } else {
-          alert("Failed to unlike post: " + (result2.message || "Unknown error"));
+
+        if (result.message === "User already liked this post") {
+            console.log("User already liked, trying to unlike...");
+
+            const response2 = await fetch(`http://localhost:3000/posts/unlike/${postId}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `JWT ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            const result2 = await response2.json(); // לוודא שהתשובה מנותחת גם כאן
+
+            if (response2.ok) {
+                alert("Post unliked successfully!");
+            } else {
+                alert("Failed to unlike post: " + (result2.message || "Unknown error"));
+            }
+
+            return;
         }
-  
-        return;
-      }
-  
-      alert("Failed to like post: " + (result.message || "Unknown error"));
+
+        alert("Failed to like post: " + (result.message || "Unknown error"));
     } catch (error) {
-      console.error("Error:", error);
-      alert("A network error occurred. Please try again.");
+        console.error("Error:", error);
+        alert("A network error occurred. Please try again.");
     }
-  };
+};
+
   
   return (
     <div className="feed-wrapper">    
@@ -154,7 +144,7 @@ const FeedPage: React.FC = () => {
           <p className="no-posts">No posts available</p>
         ) : (
           posts.map((post, index) => (
-            <div key={post.id} className="post-card" ref={index === posts.length - 1 ? lastPostRef : null}>
+            <div key={post._id} className="post-card" ref={index === posts.length - 1 ? lastPostRef : null}>
               <div className="post-header">
               <p className="post-date">{new Date(post.date).toLocaleString()}</p>
               {getUserInfo(post.SenderId)?.image && (
