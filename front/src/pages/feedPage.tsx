@@ -18,7 +18,12 @@ interface User{
   email: string;
   image: string;
 }
-const FeedPage: React.FC = () => {
+
+interface FeedPageProps {
+  filter: string;
+}
+
+const FeedPage: React.FC<FeedPageProps> = ({filter}) => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [page, setPage] = useState(1);
@@ -33,7 +38,13 @@ const FeedPage: React.FC = () => {
     if (loading || !hasMore) return;
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:3000/posts?page=${pageNumber}&limit=10`);
+      var response
+      if(!filter){
+       response = await fetch(`http://localhost:3000/posts?page=${pageNumber}&limit=10`);
+      }
+      else{
+       response = await fetch(`http://localhost:3000/posts?SenderId=${filter}&page=${pageNumber}&limit=10`);
+      }
       const data = await response.json();
       if (data.length === 0) {
         setHasMore(false); // No more posts to load
@@ -41,7 +52,7 @@ const FeedPage: React.FC = () => {
         setPosts((prevPosts) => [...prevPosts, ...data]); // Append new posts
         setPage((prevPage) => prevPage + 1);
       }
-    } catch (error) {
+    }catch (error) {
       console.error("Error fetching posts:", error);
     }finally{
       setLoading(false);

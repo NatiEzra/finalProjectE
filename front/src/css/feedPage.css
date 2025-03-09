@@ -29,6 +29,7 @@ html, body {
 }
 
 .feed-container {
+  padding-top: 0 !important;
   width: 100%;
   width: 600px; 
   height: 600px;
@@ -42,7 +43,7 @@ html, body {
   text-align: center;
   color: #FFA500; /* Match the orange color */
   margin-bottom: 20px;
-  font-size: 24px; /* Match the font size of the profile title */
+  font-size: 48px; /* Match the font size of the profile title */
 }
 
 .no-posts {

@@ -17,16 +17,18 @@ const createPost = async (req:Request, res:Response) => {
 
 const getAllPosts= async (req:Request, res:Response) => {
     const  filter  = req.query.SenderId; // Get SenderId from query parameters
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (page - 1) * limit;
     if (filter) {
         // If SenderId is provided, filter posts by SenderId
-        const posts = await PostModel.find({SenderId: filter });
+        const posts = await PostModel.find({SenderId: filter }).sort({ createdAt: -1 }).skip(skip).limit(limit);
          res.send(posts);
+
     }
     else{
     try {
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 10;
-        const skip = (page - 1) * limit;
+       
         const posts = await PostModel.find()
         .sort({ createdAt: -1 }) // Optional: Sort by latest
         .skip(skip)
