@@ -7,6 +7,7 @@ export interface interUser {
   refreshToken?: string[];
   image: string;
   name: string;
+  provider: "google" | "local";
 }
 
 const userSchema = new mongoose.Schema<interUser>({
@@ -17,7 +18,9 @@ const userSchema = new mongoose.Schema<interUser>({
   },
   password: {
     type: String,
-    required: true,
+    required: function (this: interUser) {
+      return this.provider === "local"; // Password is required only for local users
+    },
   },
   refreshToken: {
     type: [String],
@@ -29,6 +32,11 @@ const userSchema = new mongoose.Schema<interUser>({
   },
   name: {
     type: String,
+    required: true,
+  },
+  provider: {
+    type: String,
+    enum: ["google", "local"],
     required: true,
   },
 });

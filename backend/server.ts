@@ -5,6 +5,7 @@ import express, { Express } from 'express';
 import postRoutes from './routes/postRoutes';
 import commentRoutes from './routes/commentRoutes';
 import authRoutes from './routes/authRoutes';
+import restApiRoutes from './routes/restApiRoutes';
 import swaggerUI from "swagger-ui-express"
 import swaggerJsDoc from "swagger-jsdoc"
 import multer from 'multer';
@@ -16,9 +17,11 @@ const app = express();
 const cors = require("cors");
 //app.use(cors());
 app.use(cors({
-  origin: "http://localhost:5173", // ✅ Allow frontend running on Vite's default port
-  credentials: true, // ✅ Required to allow cookies
+  origin: process.env.FRONTEND_URL, 
+  credentials: true,
 }));
+
+  
 
 app.use(cookieParser()); 
 app.use(express.json());
@@ -27,6 +30,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/posts", postRoutes);
 app.use("/comments",commentRoutes);
 app.use("/auth", authRoutes);
+app.use("/restApi", restApiRoutes);
 app.use("/images", express.static("images"));
 
 

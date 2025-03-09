@@ -31,7 +31,8 @@ const register = async (req: Request, res: Response) => {
             email: req.body.email,
             password: hashedPassword,
             image: imagePath,
-            name: name
+            name: name,
+            provider: "local",
         });
         res.status(200).send(savedUser);
     } catch (error) {
@@ -102,7 +103,7 @@ const login = async (req: Request, res: Response) => {
             httpOnly: true,  // Prevents JavaScript access (XSS protection)
             secure: true,    // Send only over HTTPS
             sameSite: "strict", // Prevents CSRF attacks
-            path: "/", // Limits cookie to refresh route
+            path: "/auth/refresh", // Limits cookie to refresh route
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days expiration
           });
         res.status(200).send(
@@ -191,6 +192,9 @@ const verifyRefreshToken = (refreshToken: string | undefined) => {
                 }
                 //const tokens = user.refreshToken!.filter((token) => token !== refreshToken);
                 //user.refreshToken = tokens;
+                // user.refreshToken = [];
+                // user.refreshToken.push(refreshToken);
+                // await user.save();
                 
                 
 
@@ -239,9 +243,9 @@ const refresh = async (req: Request, res: Response) => {
             user.refreshToken = [];
         }
         //check if token is already in array
-        if (!user.refreshToken.includes(tokens.refreshToken)) {
-            user.refreshToken.push(tokens.refreshToken);
-        }
+        // if (!user.refreshToken.includes(tokens.refreshToken)) {
+        //     user.refreshToken.push(tokens.refreshToken);
+        // }
 
         await user.save();
         res.status(200).send(
@@ -291,6 +295,8 @@ const getUsers = async (req: Request, res: Response) => {
         res.status(400).send("fail");
     }
 }
+
+
 export default  {
     register,
     login,
@@ -298,4 +304,5 @@ export default  {
     logout,
     edit,
     getUsers,
+    generateToken,
 };
