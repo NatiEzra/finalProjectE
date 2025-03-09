@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
 import userModel, { interUser } from "../model/user";
 
+
+
 const register = async (req: Request, res: Response) => {
     const user: interUser = req.body;
     const email= req.body.email;
@@ -96,10 +98,17 @@ const login = async (req: Request, res: Response) => {
         }
         userExists.refreshToken.push(tokens.refreshToken);
         await userExists.save();
+        res.cookie("refreshToken", tokens.refreshToken, {
+            httpOnly: true,  // Prevents JavaScript access (XSS protection)
+            secure: true,    // Send only over HTTPS
+            sameSite: "strict", // Prevents CSRF attacks
+            path: "/", // Limits cookie to refresh route
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days expiration
+          });
         res.status(200).send(
             {
                 accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
+                //refreshToken: tokens.refreshToken,
                 _id: userExists._id,
                 image: userExists.image,
                 name: userExists.name,
@@ -165,7 +174,7 @@ const verifyRefreshToken = (refreshToken: string | undefined) => {
                 reject("fail");
                 return
             }
-            //get the user id fromn token
+            //get the user id from token
             const userId = payload._id;
             try {
                 //get the user form the db
@@ -180,8 +189,10 @@ const verifyRefreshToken = (refreshToken: string | undefined) => {
                     reject("fail");
                     return;
                 }
-                const tokens = user.refreshToken!.filter((token) => token !== refreshToken);
-                user.refreshToken = tokens;
+                //const tokens = user.refreshToken!.filter((token) => token !== refreshToken);
+                //user.refreshToken = tokens;
+                
+                
 
                 resolve(user);
             } catch (err) {
@@ -200,6 +211,8 @@ const logout = async (req: Request, res: Response) => {
         }
         user.refreshToken = [];
         await user.save();
+        res.clearCookie("refreshToken", {});
+
         res.status(200).send("success");
     } catch (err) {
         res.status(400).send("fail");
@@ -207,7 +220,12 @@ const logout = async (req: Request, res: Response) => {
 }
 const refresh = async (req: Request, res: Response) => {
     try {
-        const user = await verifyRefreshToken(req.body.refreshToken);
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) {
+            res.status(400).send("fail");
+            return;
+        }
+        const user = await verifyRefreshToken(refreshToken);
         if (!user) {
             res.status(400).send("fail");
             return;
@@ -220,12 +238,16 @@ const refresh = async (req: Request, res: Response) => {
         if (!user.refreshToken) {
             user.refreshToken = [];
         }
-        user.refreshToken.push(tokens.refreshToken);
+        //check if token is already in array
+        if (!user.refreshToken.includes(tokens.refreshToken)) {
+            user.refreshToken.push(tokens.refreshToken);
+        }
+
         await user.save();
         res.status(200).send(
             {
                 accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
+                //refreshToken: tokens.refreshToken,
                 _id: user._id
             });
         //send new token

@@ -1,13 +1,13 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/navbar.css";
+import { handleAuthLogout } from "../util/auth";
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("userId");
-    localStorage.removeItem("token");
+    handleAuthLogout();
     navigate("/login");
   };
 

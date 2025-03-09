@@ -9,11 +9,19 @@ import swaggerUI from "swagger-ui-express"
 import swaggerJsDoc from "swagger-jsdoc"
 import multer from 'multer';
 import path from 'path';
+import cookieParser from "cookie-parser";
+
 dotenv.config();
 const app = express();
 const cors = require("cors");
-app.use(cors());
+//app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173", // ✅ Allow frontend running on Vite's default port
+  credentials: true, // ✅ Required to allow cookies
+}));
 
+app.use(cookieParser()); 
+app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/posts", postRoutes);

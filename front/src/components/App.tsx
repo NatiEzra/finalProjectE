@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, {useEffect} from "react";
 import { Routes, Route } from "react-router-dom";
 // import { Route, Routes, Router } from "react-router-dom";
 import Layout from "./Layout";
@@ -10,7 +10,18 @@ import LoginPage from "../pages/loginPage.tsx";
 import RegisterPage from "../pages/registerPage.tsx";
 import MyProfile from '../pages/myProfile.tsx';
 import MyPosts from '../pages/myPosts.tsx';
+import { startTokenRefresh, stopTokenRefresh, handleAuthLogout } from "../util/auth";
+
 const App: React.FC = () => {
+
+  useEffect(() => {
+    startTokenRefresh(); // ✅ Start automatic token refreshing when the app loads
+
+    return () => {
+      stopTokenRefresh(); // ✅ Stop token refreshing when the component unmounts
+    };
+  }, []);
+
   return (
       <Routes>
         <Route path="/" element={<Layout />}>
