@@ -10,8 +10,10 @@ body .custom-navbar {
   top: 0;
   left: 0;
   z-index: 1000;
-  height: 60px; /* Adjust the height to your desired value */
   visibility: visible;
+  box-sizing:initial;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 body .custom-navbar .songify-logo25 {
@@ -52,6 +54,6 @@ body .custom-navbar .logout-button:hover {
 }
 
 body .content {
-  margin-top: 80px; /* Adjust to ensure the fixed navbar does not overlap content */
+  margin-top: 0px; /* Adjust to ensure the fixed navbar does not overlap content */
   padding: 20px;
 }
