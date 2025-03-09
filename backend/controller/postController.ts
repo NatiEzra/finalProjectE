@@ -92,58 +92,54 @@ const deletePost= async (req:Request, res:Response) => {
         res.status(400).send(error);
     }
 };
-const likePost = async (req:Request, res:Response) => {
+const likePost = async (req: Request, res: Response) => {
     const { id } = req.params;
     const userId = req.params.userId;
     var flag = false;
+
     try {
         const post = await postModel.findById(id);
         if (!post) {
-            res.status(404).send('post not found');
+            return res.status(404).json({ message: "Post not found" });
         }
-        else{
-            for (let i = 0; i < post.userLikes.length; i++) {
-                if (post.userLikes[i] == req.params.userId) {
-                    flag = true;
-                }
+
+        for (let i = 0; i < post.userLikes.length; i++) {
+            if (post.userLikes[i] == userId) {
+                return res.status(400).json({ message: "User already liked this post" });
             }
-            if (flag) {
-                res.status(400).send('user already liked this post');
-                return;
-            }
-            post.userLikes.push(userId);
-            await post.save();
-            res.status(200).json(post);
         }
-        
+
+        post.userLikes.push(userId);
+        await post.save();
+        return res.status(200).json({ message: "Post liked successfully", post });
     } catch (error) {
-        res.status(400).send(error);
+        return res.status(500).json({ message: "Server error", error });
     }
-}
-const unlikePost = async (req:Request, res:Response) => {
+};
+
+const unlikePost = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const userId = req.params.userId;
+
     try {
         const post = await postModel.findById(id);
         if (!post) {
-            res.status(404).send('post not found');
-            return;
+            return res.status(404).json({ message: "Post not found" });
         }
-        else{
-            for (let i = 0; i < post.userLikes.length; i++) {
-                if (post.userLikes[i] == req.params.userId) {
-                    post.userLikes.splice(i, 1);
-                    await post.save();
-                    res.status(200).json(post);
-                    return;
-                }
-            }
-            
+
+        const index = post.userLikes.indexOf(userId);
+        if (index === -1) {
+            return res.status(400).json({ message: "User has not liked this post" });
         }
-        
+
+        post.userLikes.splice(index, 1);
+        await post.save();
+        return res.status(200).json({ message: "Post unliked successfully", post });
     } catch (error) {
-        res.status(400).send(error);
+        return res.status(500).json({ message: "Server error", error });
     }
-}
+};
+
 
  export default {
     createPost,
