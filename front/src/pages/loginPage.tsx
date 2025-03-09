@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../css/loginPage.css";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 
 
@@ -81,8 +82,7 @@ const LoginPage: React.FC = () => {
   
           <button className="login-button" type="submit">Login</button>
           </form>
-  
-          <a href="#" className="forgot-password">Forgot password?</a>
+          <GoogleLoginButton />
   
           <div className="separator">
             <div className="line"></div>
