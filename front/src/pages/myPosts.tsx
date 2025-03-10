@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import "../css/myPosts.css";
 import FeedPage from "./feedPage";
 

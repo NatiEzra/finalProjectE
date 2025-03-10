@@ -1,5 +1,5 @@
 import express from 'express';
-import authController from '../controller/authController';
+import authController, { authMiddleware } from '../controller/authController';
 import multer from 'multer';
 import path from 'path';
 const router = express.Router();
@@ -211,7 +211,7 @@ router.post('/logout',authController.logout);
  */
 
 
-router.put('/edit',authController.edit);
+router.put('/edit',upload.single("image"),authController.edit);
 
 
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import '../css/registerPage.css';
 import { Link } from "react-router-dom";
+import '../css/registerPage.css';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({

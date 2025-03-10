@@ -1,16 +1,14 @@
-import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
-import express, { Express } from 'express';
-import postRoutes from './routes/postRoutes';
-import commentRoutes from './routes/commentRoutes';
-import authRoutes from './routes/authRoutes';
-import restApiRoutes from './routes/restApiRoutes';
-import swaggerUI from "swagger-ui-express"
-import swaggerJsDoc from "swagger-jsdoc"
-import multer from 'multer';
-import path from 'path';
 import cookieParser from "cookie-parser";
+import dotenv from 'dotenv';
+import express, { Express } from 'express';
+import mongoose from 'mongoose';
+import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUI from "swagger-ui-express";
+import authRoutes from './routes/authRoutes';
+import commentRoutes from './routes/commentRoutes';
+import postRoutes from './routes/postRoutes';
+import restApiRoutes from './routes/restApiRoutes';
 
 dotenv.config();
 const app = express();
