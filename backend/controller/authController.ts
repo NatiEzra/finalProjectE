@@ -264,7 +264,7 @@ const edit = async (req: Request, res: Response) => {
     try {
         const user = await userModel.findById(req.body._id);
         if (!user) {
-            res.status(400).send("fail");
+            res.status(402).send("fail");
             return;
         }
         if (!user.refreshToken || user.refreshToken.length === 0) {
@@ -285,7 +285,7 @@ const edit = async (req: Request, res: Response) => {
         
         
     } catch (err) {
-        res.status(400).send("fail");
+        res.status(401).send("fail");
     }
 }
 
