@@ -263,13 +263,8 @@ const refresh = async (req: Request, res: Response) => {
 const edit = async (req: Request, res: Response) => {
     try {
         const user = await userModel.findById(req.body._id);
-        const username= req.body.username;
-        if(username==""){
-            res.status(400).send("fail");
-            return;
-        }
         if (!user) {
-            res.status(400).send("fail");
+            res.status(402).send("fail");
             return;
         }
         var refreshToken=req.body.refreshToken;
@@ -283,7 +278,7 @@ const edit = async (req: Request, res: Response) => {
         
         
     } catch (err) {
-        res.status(400).send("fail");
+        res.status(401).send("fail");
     }
 }
 
