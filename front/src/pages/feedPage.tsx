@@ -30,6 +30,89 @@ const FeedPage: React.FC<FeedPageProps> = ({filter}) => {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
+const [editPostId, setEditPostId] = useState<string | null>(null);
+const [editTitle, setEditTitle] = useState("");
+const [editContent, setEditContent] = useState("");
+const [imageFile, setImageFile] = useState<File | null>(null);
+
+
+const handleEditPost = async () => {
+  if (!editPostId) return;
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    alert("You must be logged in to edit a post.");
+    return;
+  }
+
+
+  try {
+    const formData = new FormData();
+    formData.append("title", editTitle);
+    formData.append("content", editContent);
+    if (imageFile) formData.append("image", imageFile);
+      const response = await fetch(`http://localhost:3000/posts/${editPostId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `JWT ${token}`,
+      },
+      body: formData
+    });
+
+
+const result=await response.json();
+    if (response.ok) {
+      alert("Post updated successfully!");
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post._id === editPostId
+              ? { ...post, title: editTitle, content: editContent, image: result.image || post.image }
+              : post
+          )
+        );
+        setEditPostId(null); // סגירת המודל
+         
+    } else {
+      const result = await response.json();
+      alert("Failed to update post: " + (result.message || "Unknown error"));
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    alert("A network error occurred. Please try again.");
+  }
+};
+
+
+
+  const handleDeletePost = async (postId: string) => {
+    const token = localStorage.getItem("accessToken");
+  
+    if (!token) {
+      alert("You must be logged in to delete a post.");
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:3000/posts/${postId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `JWT ${token}`,
+        },
+      });
+  
+      if (response.ok) {
+        alert("Post deleted successfully!");
+        setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId)); // מעדכן את הרשימה
+      } else {
+        const result = await response.json();
+        alert("Failed to delete post: " + (result.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("A network error occurred. Please try again.");
+    }
+  };
+  
 
   const observer = useRef<IntersectionObserver | null>(null);
 
@@ -44,6 +127,8 @@ const FeedPage: React.FC<FeedPageProps> = ({filter}) => {
       }
       else{
        response = await fetch(`http://localhost:3000/posts?SenderId=${filter}&page=${pageNumber}&limit=10`);
+       
+
       }
       const data = await response.json();
       if (data.length === 0) {
@@ -95,8 +180,8 @@ const FeedPage: React.FC<FeedPageProps> = ({filter}) => {
 
   const HandleLike = async (postId: string) => {
     const token = localStorage.getItem("accessToken");
-  
-    if (!token) {
+    const userId = localStorage.getItem("id");
+    if (!token|| !userId){
         alert("You must be logged in to like/unlike a post.");
         return;
     }
@@ -113,8 +198,12 @@ const FeedPage: React.FC<FeedPageProps> = ({filter}) => {
         const result = await response.json(); // לוודא שהתשובה תמיד מנותחת
 
         if (response.ok) {
-            alert("Post liked successfully!");
-            return;
+          setPosts((prevPosts) =>
+            prevPosts.map((post) =>
+              post._id === postId ? { ...post, userLikes:result.post.userLikes } : post
+            )
+          ); 
+                     return;
         }
 
         if (result.message === "User already liked this post") {
@@ -131,8 +220,15 @@ const FeedPage: React.FC<FeedPageProps> = ({filter}) => {
             const result2 = await response2.json(); // לוודא שהתשובה מנותחת גם כאן
 
             if (response2.ok) {
-                alert("Post unliked successfully!");
-            } else {
+              setPosts((prevPosts) =>
+                prevPosts.map((post) =>
+                  post._id === postId
+                    ? { ...post, userLikes: result2.post.userLikes}
+                    : post
+                )
+              );
+                        } 
+                        else {
                 alert("Failed to unlike post: " + (result2.message || "Unknown error"));
             }
 
@@ -163,6 +259,68 @@ const FeedPage: React.FC<FeedPageProps> = ({filter}) => {
               )}
               <h3 className="post-user">{getUserInfo(post.SenderId)?.name || "Unknown User"}</h3>
                </div>
+               {filter && (
+  <div className="post-actions">
+    <button 
+      className="btn btn-light edit-btn"
+      onClick={() => {
+        setEditPostId(post._id);
+        setEditTitle(post.title);
+        setEditContent(post.content);
+      }}
+      data-bs-toggle="modal"
+      data-bs-target="#editPostModal"
+    >
+      ✏️ Edit
+    </button>
+    <button 
+      className="btn btn-danger delete-btn"
+      onClick={() => handleDeletePost(post._id)}
+    >
+      🗑️ Delete
+    </button>
+  </div>
+)}
+<div className="modal fade" id="editPostModal" tabIndex={-1} aria-labelledby="editPostModalLabel" aria-hidden="true">
+  <div className="modal-dialog">
+    <div className="modal-content">
+      <div className="modal-header">
+        <h5 className="modal-title">Edit Post</h5>
+        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div className="modal-body">
+        <input 
+          type="text" 
+          className="form-control mb-2" 
+          value={editTitle} 
+          onChange={(e) => setEditTitle(e.target.value)}
+          placeholder="Post Title"
+        />
+        <textarea 
+          className="form-control" 
+          value={editContent} 
+          onChange={(e) => setEditContent(e.target.value)}
+          placeholder="Post Content"
+        />
+        <div className="mb-3">
+                <label className="form-label">Upload Image</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="form-control"
+                  onChange={(e) => setImageFile(e.target.files ? e.target.files[0] : null)}  />
+
+              </div>
+      </div>
+      <div className="modal-footer">
+        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" className="btn btn-primary" onClick={handleEditPost} data-bs-dismiss="modal">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
               <h3 className="post-title">{post.title}</h3>
               <p className="post-content">{post.content}</p>
               {post.image && <img src={`http://localhost:3000/${post.image}`} alt="Post" className="post-image" />}

@@ -169,7 +169,7 @@ router.get('/:id', postController.getPostById);
  *       500:
  *         description: Server error
  */
-router.put('/:id',authMiddleware, postController.updatePost);
+router.put('/:id',authMiddleware,upload.single("image"), postController.updatePost);
 
 
 /**
