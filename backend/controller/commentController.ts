@@ -71,10 +71,27 @@ const getCommentById= async (req:Request, res:Response) => {
         res.status(400).send(error);
     }
 }
+const getCommentByPostId= async (req:Request, res:Response) => {
+    const { id } = req.params;
+    try {
+    const comment = await commentModel.find({postId : id});
+    if (comment==null) {
+        res.status(404).send("comments not found");
+    }
+    else
+    {
+        res.status(200).send(comment);
+    }
+    }
+    catch (error) {
+        res.status(400).send
+    }
+}
 export default { 
     createComment,
     getAllComments,
     updateComment,
     deleteComment,
-    getCommentById
+    getCommentById,
+    getCommentByPostId
  };
