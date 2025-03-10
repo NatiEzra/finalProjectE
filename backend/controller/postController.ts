@@ -59,12 +59,14 @@ const getPostById= async (req:Request, res:Response) => {
 
 const updatePost = async (req:Request, res:Response) => { 
     const { id } = req.params; // מקבל את ה-ID מהנתיב
-    
+    var newPost = req.body;
+    if(req.file)
+    newPost.image= req.file.path;
     try {
         // מחפש את הפוסט ומעדכן אותו עם הנתונים מ-body
         const updatedPost = await PostModel.findByIdAndUpdate(
             id, // מזהה הפוסט לעדכון
-            req.body, // הנתונים החדשים
+            newPost, // הנתונים החדשים
             { new: true } // מחזיר את המסמך המעודכן
         );
 
