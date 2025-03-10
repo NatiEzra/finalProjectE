@@ -264,13 +264,20 @@ const edit = async (req: Request, res: Response) => {
     try {
         const user = await userModel.findById(req.body._id);
         if (!user) {
-            res.status(402).send("fail");
+            res.status(400).send("fail");
             return;
         }
-        var refreshToken=req.body.refreshToken;
+        if (!user.refreshToken || user.refreshToken.length === 0) {
+            res.status(401).send("fail");
+            return;
+        }
+        var refreshToken = user.refreshToken[0];
         if (await verifyRefreshToken(refreshToken)){
             //user.set(req.body);
-            user.image=req.body.image;
+            //user.image=req.body.image;
+            if (req.file) {
+                user.image = req.file.path;
+            }
             user.name=req.body.name;
              await user.save();
             res.status(200).send(user);
@@ -278,7 +285,7 @@ const edit = async (req: Request, res: Response) => {
         
         
     } catch (err) {
-        res.status(401).send("fail");
+        res.status(400).send("fail");
     }
 }
 
