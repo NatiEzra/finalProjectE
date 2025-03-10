@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import "../css/loginPage.css";
 import GoogleLoginButton from "../components/GoogleLoginButton";
+import "../css/loginPage.css";
 
 
 
@@ -41,6 +41,7 @@ const LoginPage: React.FC = () => {
           localStorage.setItem('name', result.name);
           localStorage.setItem('image', result.image);
           localStorage.setItem('id', result._id);
+          localStorage.setItem('provider', 'local');
           window.location.href = "/home";
         } else {
           alert("Login failed: " + result.message);

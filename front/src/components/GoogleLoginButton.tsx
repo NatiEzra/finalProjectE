@@ -51,8 +51,9 @@ const GoogleLoginButton = () => {
         localStorage.setItem("accessToken", data.accessToken);
         localStorage.setItem("email", data.user.email);
         localStorage.setItem("name", data.user.name);
-        localStorage.setItem("image", data.user.profilePic);
+        localStorage.setItem("image", data.user.image);
         localStorage.setItem("id", data.user._id);
+        localStorage.setItem("provider", "google");
   
         // Redirect to home or dashboard
         window.location.href = "/home";
