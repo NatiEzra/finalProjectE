@@ -10,6 +10,7 @@ import LoginPage from "../pages/loginPage.tsx";
 import RegisterPage from "../pages/registerPage.tsx";
 import MyProfile from '../pages/myProfile.tsx';
 import MyPosts from '../pages/myPosts.tsx';
+import CommentsPage from '../pages/commentsPage.tsx';
 import { startTokenRefresh, stopTokenRefresh, handleAuthLogout } from "../util/auth";
 
 const App: React.FC = () => {
@@ -29,6 +30,7 @@ const App: React.FC = () => {
           <Route path="profile" element={<MyProfile />} />
           <Route path="myPosts" element={<MyPosts />} />
           <Route path="createPost" element={<CreatePost />} />
+          <Route path="comments/:postId" element={<CommentsPage />} />
         </Route>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />

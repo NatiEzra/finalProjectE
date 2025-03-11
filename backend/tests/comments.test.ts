@@ -53,12 +53,12 @@ describe("Comments Tests", () => {
     .send({
       postId: "Test PostId-1",
       content: "Test Content-1",
-      username: "Test username-1",
+      userId: "Test userId-1",
     });
     expect(response.statusCode).toBe(201);
     expect(response.body.postId).toBe("Test PostId-1");
     expect(response.body.content).toBe("Test Content-1");
-    expect(response.body.username).toBe("Test username-1");
+    expect(response.body.userId).toBe("Test userId-1");
     commentId = response.body._id;
   });
 
@@ -69,22 +69,22 @@ describe("Comments Tests", () => {
     .send({
       postId: "Test PostId",
       content: "Test Content",
-      username: "Test username",
+      userId: "Test userId",
     });
     expect(response.statusCode).toBe(200);
     expect(response.body.postId).toBe("Test PostId");
     expect(response.body.content).toBe("Test Content");
-    expect(response.body.username).toBe("Test username");
+    expect(response.body.userId).toBe("Test userId");
     commentId = response.body._id;
   });
 
-  test("Test get comment by username", async () => {
-    const response = await request(app).get("/comments?owner=" + "Test username");
+  test("Test get comment by userId", async () => {
+    const response = await request(app).get("/comments?owner=" + "Test userId");
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
     expect(response.body[0].postId).toBe("Test PostId");
     expect(response.body[0].content).toBe("Test Content");
-    expect(response.body[0].username).toBe("Test username");
+    expect(response.body[0].userId).toBe("Test userId");
   });
 
   test("Comments get post by id", async () => {
@@ -92,7 +92,7 @@ describe("Comments Tests", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.postId).toBe("Test PostId");
     expect(response.body.content).toBe("Test Content");
-    expect(response.body.username).toBe("Test username");
+    expect(response.body.userId).toBe("Test userId");
   });
 
 
@@ -102,7 +102,7 @@ describe("Comments Tests", () => {
     expect(response.body.length).toBe(1);
     expect(response.body[0].postId).toBe("Test PostId");
     expect(response.body[0].content).toBe("Test Content");
-    expect(response.body[0].username).toBe("Test username");
+    expect(response.body[0].userId).toBe("Test userId");
   });
 
   test("Comments delete by id", async () => {
@@ -111,7 +111,7 @@ describe("Comments Tests", () => {
     expect(response.statusCode).toBe(200);
     expect(response.body.postId).toBe("Test PostId");
     expect(response.body.content).toBe("Test Content");
-    expect(response.body.username).toBe("Test username");
+    expect(response.body.userId).toBe("Test userId");
   });
 
   test("Comments update fail", async () => {
@@ -120,7 +120,7 @@ describe("Comments Tests", () => {
     .send({
       postId: "Test PostId",
       content: "Test Content",
-      username: "Test username",
+      userId: "Test userId",
     });
     expect(response.statusCode).not.toBe(200);
   });

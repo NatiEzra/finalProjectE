@@ -22,7 +22,7 @@ const getAllPosts= async (req:Request, res:Response) => {
     const skip = (page - 1) * limit;
     if (filter) {
         // If SenderId is provided, filter posts by SenderId
-        const posts = await PostModel.find({SenderId: filter }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const posts = await PostModel.find({SenderId: filter }).sort({ date: -1 }).skip(skip).limit(limit);
          res.send(posts);
 
     }
@@ -30,7 +30,7 @@ const getAllPosts= async (req:Request, res:Response) => {
     try {
        
         const posts = await PostModel.find()
-        .sort({ createdAt: -1 }) // Optional: Sort by latest
+        .sort({ date: -1 })
         .skip(skip)
         .limit(limit);
         const totalPosts = await PostModel.countDocuments(); // Total posts count
