@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import "../css/feedPage.css";
+import { refreshAccessToken } from "../util/auth";
 
 interface Post {
   _id: string;
@@ -34,6 +35,10 @@ const [editPostId, setEditPostId] = useState<string | null>(null);
 const [editTitle, setEditTitle] = useState("");
 const [editContent, setEditContent] = useState("");
 const [imageFile, setImageFile] = useState<File | null>(null);
+
+ useEffect(() => {
+    refreshAccessToken(); 
+  }, []);
 
 
 const handleEditPost = async () => {
@@ -151,12 +156,12 @@ const result=await response.json();
         setHasMore(false); // No more posts to load
       } else {
         const postsWithComments = await Promise.all(
-          data.map(async (post: Post) => {
+          data.sort((a: Post, b: Post) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(async (post: Post) => {
             const commentsCount = await fetchCommentsCount(post._id);
             post.comments=commentsCount;
             return post;
           }));
-        setPosts((prevPosts) => [...prevPosts, ...postsWithComments]); // Append new posts
+        setPosts((prevPosts) => [...prevPosts, ...postsWithComments]);
         setPage((prevPage) => prevPage + 1);
       }
     }catch (error) {

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/createPost.css";
+import { refreshAccessToken } from "../util/auth";
 
 const CreatePostPage: React.FC = () => {
   const navigate = useNavigate();
@@ -8,6 +9,10 @@ const CreatePostPage: React.FC = () => {
     title: "",
     content: "",
   });
+
+  useEffect(() => {
+    refreshAccessToken(); 
+  }, []);
 
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("accessToken"); 

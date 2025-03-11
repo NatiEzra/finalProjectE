@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
+import { refreshAccessToken } from "../util/auth";
 
 interface Comment {
   _id: string;
   postId: string;
   content: string;
   userId: string;
+  date: Date;
 }
 
 interface User {
@@ -29,16 +31,18 @@ const CommentsPage: React.FC = () => {
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   // Fetch the post
   useEffect(() => {
+    refreshAccessToken(); // Refresh the token when the page loads.
     const fetchPost = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/posts/${postId}`,{
-            method: 'GET'
-        });
+        const response = await fetch(`http://localhost:3000/posts/${postId}`);
         const data = await response.json();
         setPost(data);
       } catch (error) {
@@ -49,21 +53,30 @@ const CommentsPage: React.FC = () => {
     fetchPost();
   }, [postId]);
 
-  // Fetch comments
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await fetch(`http://localhost:3000/comments/post/${postId}`);
-        const data = await response.json();
-        setComments(data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch comments with pagination
+  const fetchComments = async (pageNumber: number) => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
 
-    fetchComments();
+    try {
+      const response = await fetch(`http://localhost:3000/comments/post/${postId}?page=${pageNumber}&limit=10`);
+      const data = await response.json();
+
+      if (data.length === 0) {
+        setHasMore(false); // No more comments to load
+      } else {
+        setComments((prevComments) => [...prevComments, ...data]);
+        setPage((prevPage) => prevPage + 1);
+      }
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchComments(1); // Load the first page of comments when component mounts
   }, [postId]);
 
   // Fetch users
@@ -90,14 +103,14 @@ const CommentsPage: React.FC = () => {
 
     const token = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("id");
-    
+
     if (!token || !userId) {
       alert("You must be logged in to comment.");
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/comments/create`, {
+      const response = await fetch(`http://localhost:3000/comments/`, {
         method: "POST",
         headers: {
           Authorization: `JWT ${token}`,
@@ -113,7 +126,7 @@ const CommentsPage: React.FC = () => {
       const result = await response.json();
 
       if (response.ok) {
-        setComments([...comments, result]); // Append new comment
+        setComments((prevComments) => [result, ...prevComments]); // Add new comment to top
         setNewComment(""); // Clear input
       } else {
         alert("Failed to add comment: " + (result.message || "Unknown error"));
@@ -123,21 +136,57 @@ const CommentsPage: React.FC = () => {
       alert("A network error occurred. Please try again.");
     }
   };
-  if(!post) return <p>Loading...</p>;
+  const handleDeleteComment = async (commentId: string) => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("You must be logged in to delete a comment.");
+      return;
+    }
+    const response = await fetch(`http://localhost:3000/comments/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `JWT ${token}`,
+      },
+    });
+    if (response.ok) {
+      setComments(comments.filter((comment) => comment._id !== commentId));
+    } else {
+      alert("Failed to delete comment.");
+    }
+    };
+
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastCommentRef = useCallback(
+      (node: HTMLDivElement | null) => {
+      if (loadingMore) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          fetchComments(page);
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loadingMore, hasMore, page]
+  );
+
+  if (!post) return <p>Loading...</p>;
   const postSender = users.find(user => user._id === post.SenderId);
+
   return (
     <div className="comments-container">
+      {/* Post Display */}
       {post && (
         <div className="post-card">
-            <div className="post-header">
-                {postSender?.image ? (
-                    <img src={`http://localhost:3000/${postSender.image}`} alt="User" className="user-avatar" />
-                ) : (
-                    <img src="http://localhost:3000/images/default-avatar.png" alt="Default Avatar" className="user-avatar" />
-                )}
-                <strong>{postSender?.name || "Unknown User"}</strong>
-
-            </div>
+          <div className="post-header">
+            {postSender?.image ? (
+              <img src={`http://localhost:3000/${postSender.image}`} alt="User" className="user-avatar" />
+            ) : (
+              <img src="http://localhost:3000/images/default-avatar.png" alt="Default Avatar" className="user-avatar" />
+            )}
+            <strong>{postSender?.name || "Unknown User"}</strong>
+          </div>
           <h3>{post.title}</h3>
           <p>{post.content}</p>
           {post.image && <img src={`http://localhost:3000/${post.image}`} alt="Post" className="post-image" />}
@@ -145,35 +194,7 @@ const CommentsPage: React.FC = () => {
         </div>
       )}
 
-      <h2>Comments</h2>
-      {loading ? (
-        <p>Loading comments...</p>
-      ) : comments.length === 0 ? (
-        <p>No comments yet.</p>
-      ) : (
-        <ul>
-          {comments.map((comment) => {
-            const user = getUserInfo(comment.userId);
-
-            return (
-              <li key={comment._id} className="comment-item">
-                <div className="comment-header">
-                  {user?.image ? (
-                    <img src={`http://localhost:3000/${user.image}`} alt="User" className="user-avatar" />
-                  ) : (
-                    <img src="http://localhost:3000/images/default-avatar.png" alt="Default Avatar" className="user-avatar" />
-                  )}
-                  <strong>{user?.name || "Unknown User"}</strong>
-                </div>
-                <p>{comment.content}</p>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-
-      {/* Comment Input */}
-      <div className="comment-input">
+    <div className="comment-input">
         <textarea
           placeholder="Write a comment..."
           value={newComment}
@@ -181,6 +202,59 @@ const CommentsPage: React.FC = () => {
         />
         <button onClick={handleAddComment}>Add Comment</button>
       </div>
+      <h2>Comments</h2>
+
+      {comments.length === 0 ? (
+        <p>No comments yet.</p>
+      ) : (
+        <>
+          <div>
+            {comments.map((comment, index) => {
+              const user = getUserInfo(comment.userId);
+              return (
+                <div
+                  key={comment._id}
+                  className="comment-item"
+                  ref={index === comments.length - 1 ? lastCommentRef : null} // Attach observer to last comment}
+                >
+                    {(localStorage.getItem("id") === comment.userId) && (
+                    <div>
+                        <button 
+                            className="btn btn-light edit-btn"
+                            onClick={() => {
+                            }}
+                            >
+                            ✏️ Edit
+                        </button>
+                        <button 
+                            className="btn btn-danger delete-btn"
+                            onClick={() => handleDeleteComment(comment._id)}
+                            >
+                            🗑️ Delete
+                        </button>
+                    </div>
+                    )}
+                  <img
+                    src={user?.image ? `http://localhost:3000/${user.image}` : "http://localhost:3000/images/default-avatar.png"}
+                    alt="User"
+                    className="user-avatar"
+                  />
+                  <div className="comment-content">
+                    <div className="comment-header">
+                      <strong>{user?.name || "Unknown User"}</strong>
+                      <span className="comment-date">{new Date(comment.date).toLocaleString()}</span>
+                    </div>
+                    <p className="comment-text">{comment.content}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          {loadingMore && <p>Loading more comments...</p>}
+        </>
+      )}
+
+      
     </div>
   );
 };
