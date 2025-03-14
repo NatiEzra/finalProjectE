@@ -5,6 +5,7 @@ import { refreshAccessToken } from "../util/auth";
 const SongRecommendations: React.FC = () => {
   const [recommendations, setRecommendations] = useState<string[]>([]);
   const userId = localStorage.getItem("id");
+  const token = localStorage.getItem("accessToken");
   useEffect(() => {
     refreshAccessToken(); 
   }, []);
@@ -14,7 +15,7 @@ const SongRecommendations: React.FC = () => {
         const response = await fetch(`http://localhost:3000/restApi/recommendations/${userId}`,{
             method: "GET",
             headers: {
-                Authorization: `JWT ${localStorage.getItem("accessToken")}`,
+                Authorization: `JWT ${token}`,
             },
       });
         const data = await response.json();
@@ -33,7 +34,7 @@ const SongRecommendations: React.FC = () => {
       <h2>🎵 AI Song Recommendations</h2>
 
       {recommendations && recommendations.length === 0 ? (
-        <p>No recommendations available.</p>
+        <p>Add posts to see recommendations.</p>
       ) : (
         <div className="recommendations-list">
           {recommendations && recommendations.map((song, index) => (

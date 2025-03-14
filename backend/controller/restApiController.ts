@@ -50,10 +50,10 @@ const googleAuth = async (req: Request, res: Response) => {
 
 const recommendSongs = async (req : Request, res : Response) => {
   try {
-    const { userId } = req.params;
+    const { id } = req.params;
 
     // Fetch the user's latest posts
-    const userPosts = await PostModel.find({ SenderId: userId }).sort({ date: -1 }).limit(5);
+    const userPosts = await PostModel.find({ SenderId: id }).sort({ date: -1 }).limit(5);
 
     if (!userPosts.length) {
       return res.json({ recommendations: [], message: "No posts found for recommendations." });

@@ -6,6 +6,6 @@ import {authMiddleware} from '../controller/authController';
 const router = express.Router();
 
 router.post("/auth/google", googleController.googleAuth);
-router.get("/recommendations/:userId", authMiddleware, googleController.recommendSongs);
+router.get("/recommendations/:id", authMiddleware, googleController.recommendSongs);
 
 export default router;
