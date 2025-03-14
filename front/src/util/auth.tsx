@@ -46,7 +46,7 @@ export const refreshAccessToken = async (): Promise<void> => {
       });
   
       localStorage.removeItem("accessToken");
-      localStorage.removeItem("userId");
+      localStorage.removeItem("id");
   
       stopTokenRefresh(); // ✅ Stop automatic refreshing
       window.location.href = "/login"; // Redirect to login
