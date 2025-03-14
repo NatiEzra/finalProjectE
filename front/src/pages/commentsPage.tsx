@@ -33,6 +33,9 @@ const CommentsPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [newComment, setNewComment] = useState("");
   const [page, setPage] = useState(1);
+  const [editCommentContent, setEditCommentContent] = useState<string | null>(null);
+  const [editCommentId, setEditCommentId] = useState<string | null>(null);
+  
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -136,6 +139,41 @@ const CommentsPage: React.FC = () => {
       alert("A network error occurred. Please try again.");
     }
   };
+
+  const handleEditComment = async (commentId: string) => {
+    if(!editCommentId) 
+      return;
+    const token = localStorage.getItem("accessToken");
+    
+    if (!token) {
+      alert("You must be logged in to edit a comment.");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("content", editCommentContent || "");
+    try {
+      const response = await fetch(`http://localhost:3000/comments/${commentId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `JWT ${token}`,
+        },
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setComments(comments.map((comment) => (comment._id === commentId && editCommentContent !== null ? { ...comment, content: editCommentContent } : comment)));
+        setEditCommentId(null);// close the modal
+      } else {
+        alert("Failed to edit comment: " + (result.message || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error editing comment:", error);
+      alert("A network error occurred. Please try again.");
+    }
+  }
+
   const handleDeleteComment = async (commentId: string) => {
     const token = localStorage.getItem("accessToken");
     if (!token) {
@@ -193,8 +231,9 @@ const CommentsPage: React.FC = () => {
           <p className="post-date">Posted on {new Date(post.date).toLocaleString()}</p>
         </div>
       )}
-
-    <div className="comment-input">
+  
+      {/* New Comment Input */}
+      <div className="comment-input">
         <textarea
           placeholder="Write a comment..."
           value={newComment}
@@ -202,61 +241,91 @@ const CommentsPage: React.FC = () => {
         />
         <button onClick={handleAddComment}>Add Comment</button>
       </div>
+  
       <h2>Comments</h2>
-
+  
       {comments.length === 0 ? (
         <p>No comments yet.</p>
       ) : (
-        <>
-          <div>
-            {comments.map((comment, index) => {
-              const user = getUserInfo(comment.userId);
-              return (
-                <div
-                  key={comment._id}
-                  className="comment-item"
-                  ref={index === comments.length - 1 ? lastCommentRef : null} // Attach observer to last comment}
-                >
-                    {(localStorage.getItem("id") === comment.userId) && (
-                    <div>
-                        <button 
-                            className="btn btn-light edit-btn"
-                            onClick={() => {
-                            }}
-                            >
-                            ✏️ Edit
-                        </button>
-                        <button 
-                            className="btn btn-danger delete-btn"
-                            onClick={() => handleDeleteComment(comment._id)}
-                            >
-                            🗑️ Delete
-                        </button>
-                    </div>
-                    )}
-                  <img
-                    src={user?.image ? `http://localhost:3000/${user.image}` : "http://localhost:3000/images/default-avatar.png"}
-                    alt="User"
-                    className="user-avatar"
-                  />
-                  <div className="comment-content">
-                    <div className="comment-header">
-                      <strong>{user?.name || "Unknown User"}</strong>
-                      <span className="comment-date">{new Date(comment.date).toLocaleString()}</span>
-                    </div>
-                    <p className="comment-text">{comment.content}</p>
+        <div>
+          {comments.map((comment, index) => {
+            const user = getUserInfo(comment.userId);
+            return (
+              <div
+                key={comment._id}
+                className="comment-item"
+                ref={index === comments.length - 1 ? lastCommentRef : null}
+              >
+                {(localStorage.getItem("id") === comment.userId) && (
+                  <div>
+                    <button 
+                      className="btn btn-light edit-btn"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editCommentModal"
+                      onClick={() => {
+                        setEditCommentContent(comment.content);
+                        setEditCommentId(comment._id);
+                      }}
+                    >
+                      ✏️ Edit
+                    </button>
+                    <button 
+                      className="btn btn-danger delete-btn"
+                      onClick={() => handleDeleteComment(comment._id)}
+                    >
+                      🗑️ Delete
+                    </button>
                   </div>
+                )}
+                <img
+                  src={user?.image ? `http://localhost:3000/${user.image}` : "http://localhost:3000/images/default-avatar.png"}
+                  alt="User"
+                  className="user-avatar"
+                />
+                <div className="comment-content">
+                  <div className="comment-header">
+                    <strong>{user?.name || "Unknown User"}</strong>
+                    <span className="comment-date">{new Date(comment.date).toLocaleString()}</span>
+                  </div>
+                  <p className="comment-text">{comment.content}</p>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
           {loadingMore && <p>Loading more comments...</p>}
-        </>
+        </div>
       )}
-
-      
+  
+      {/* Edit Comment Modal */}
+      <div className="modal fade" id="editCommentModal" tabIndex={-1} aria-labelledby="editCommentModalLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Edit Comment</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div className="modal-body">
+              <textarea
+                className="form-control"
+                value={editCommentContent || ""}
+                onChange={(e) => setEditCommentContent(e.target.value)}
+              />
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button 
+                type="button" 
+                className="btn btn-primary" 
+                onClick={() => handleEditComment(editCommentId!)}
+                data-bs-dismiss="modal"
+              >
+                Save changes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default CommentsPage;
+}
+export default CommentsPage;  

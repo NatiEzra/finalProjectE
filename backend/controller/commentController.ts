@@ -30,8 +30,10 @@ const getAllComments= async (req:Request, res:Response) => {
 const updateComment= async (req:Request, res:Response) => {
     const {id} = req.params;
     const commentBody = req.body;
+    console.log("here0"+commentBody);
+    console.log("here1"+commentBody.content);
     try {
-        const comment = await commentModel.findByIdAndUpdate(id,   commentBody, { new: true });
+        const comment = await commentModel.findByIdAndUpdate(id,   commentBody.content, { new: true });
         
         if(!comment) {
             res.status(404).send('comment not found');
