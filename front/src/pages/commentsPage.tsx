@@ -33,7 +33,7 @@ const CommentsPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [newComment, setNewComment] = useState("");
   const [page, setPage] = useState(1);
-  const [editCommentContent, setEditCommentContent] = useState<string | null>(null);
+  const [editCommentContent, setEditCommentContent] = useState("");
   const [editCommentId, setEditCommentId] = useState<string | null>(null);
   
   const [loading, setLoading] = useState(true);
@@ -141,7 +141,7 @@ const CommentsPage: React.FC = () => {
   };
 
   const handleEditComment = async (commentId: string) => {
-    if(!editCommentId) 
+    if(!editCommentId || !editCommentContent.trim()) 
       return;
     const token = localStorage.getItem("accessToken");
     
@@ -149,15 +149,19 @@ const CommentsPage: React.FC = () => {
       alert("You must be logged in to edit a comment.");
       return;
     }
-    const formData = new FormData();
-    formData.append("content", editCommentContent || "");
+    
     try {
+      const formData = new FormData();
+      formData.append("content", editCommentContent);
       const response = await fetch(`http://localhost:3000/comments/${commentId}`, {
         method: "PUT",
         headers: {
           Authorization: `JWT ${token}`,
+          "Content-Type": "application/json"
         },
-        body: formData,
+        body: JSON.stringify({
+          content: editCommentContent
+        }),
       });
 
       const result = await response.json();
