@@ -4,6 +4,9 @@ import User from "../model/user"; // Adjust this path if needed
 import authController from "./authController"; // Adjust this path if needed
 import exp from "constants";
 import { access } from "fs";
+import axios from "axios";
+import dotenv from "dotenv";
+import PostModel from "../model/post";
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -41,6 +44,58 @@ const googleAuth = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Google Authentication Failed" });
   }
 };
+
+
+
+
+const recommendSongs = async (req : Request, res : Response) => {
+  try {
+    const { userId } = req.params;
+
+    // Fetch the user's latest posts
+    const userPosts = await PostModel.find({ SenderId: userId }).sort({ date: -1 }).limit(5);
+
+    if (!userPosts.length) {
+      return res.json({ recommendations: [], message: "No posts found for recommendations." });
+    }
+
+    // Combine post content
+    const postText = userPosts.map(post => post.title +": "+ post.content  ).join("\n");
+    const promptText = `Based on these posts by the user recommend 5 songs.
+    write just the song and artist name, and go down one line between the songs.
+    Make sure the song really belongs to the artist,
+    write the title of the song in its original language.
+    do not recommend the same songs he wrote about in the posts:
+     \n${postText}`;
+    // Call Gemini API for recommendations
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        contents: [{ parts: [{ text: promptText }] }],
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Extract recommendations from API response
+    const textResponse = response.data?.candidates?.[0]?.content?.parts[0]|| [];
+
+  
+    const recommendations = (textResponse.text.toString()).split("\n") || [];
+
+    res.status(200).json({ recommendations });
+  } catch (error) {
+    console.error("Error fetching recommendations:", error);
+    res.status(400).json({ error: "Failed to fetch recommendations" });
+  }
+};
+
+
+
 export default {
     googleAuth,
+    recommendSongs,
 }
