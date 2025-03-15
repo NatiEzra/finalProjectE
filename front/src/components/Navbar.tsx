@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="custom-navbar">
-      <h1 className="songify-logo25">Songify</h1>
+      <h1 className="songify-logo25">Songify🎵</h1>
       <div className="nav-links">
       <Link to="/profile" className="nav-button">Profile</Link>
         <Link to="/forYou" className="nav-button">For You</Link>
