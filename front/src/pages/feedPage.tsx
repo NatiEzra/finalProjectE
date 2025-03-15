@@ -273,7 +273,7 @@ const result=await response.json();
   return (
     <div className="feed-wrapper">    
       <div className="feed-container">
-        <h2 className="feed-title">Feed</h2>
+        <h2 className="feed-title"></h2>
         {posts.length === 0 ? (
           <p className="no-posts">No posts available</p>
         ) : (

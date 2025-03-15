@@ -79,7 +79,7 @@ const getCommentByPostId= async (req:Request, res:Response) => {
     const limit = parseInt(req.query.limit as string) || 10;
     const skip = (page - 1) * limit;
     try {
-    const comment = await commentModel.find({postId : id}).sort({ date: -1 }).skip(skip).limit(limit);
+    const comment = await commentModel.find({postId : id}).sort({ date: 1 }).skip(skip).limit(limit);
     if (comment==null) {
         res.status(404).send("comments not found");
     }
