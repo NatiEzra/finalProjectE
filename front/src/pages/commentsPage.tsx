@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { refreshAccessToken } from "../util/auth";
+import "../css/commentsPage.css";
 
 interface Comment {
   _id: string;
