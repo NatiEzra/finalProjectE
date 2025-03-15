@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import "../css/forYou.css";
 import { refreshAccessToken } from "../util/auth";
 
 const SongRecommendations: React.FC = () => {

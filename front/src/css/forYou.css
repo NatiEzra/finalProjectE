@@ -1,0 +1,15 @@
+/* 🎵 Song Recommendations Page Styling */
+.recommendations-container {
+    max-width: 900px;
+    margin: 80px auto 20px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    border: 3px solid #FFA500;
+}
+  
+  .recommended-song {
+    color:black
+  }
