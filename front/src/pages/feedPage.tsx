@@ -330,8 +330,11 @@ const result=await response.json();
             <div key={post._id} className="post-card" ref={index === posts.length - 1 ? lastPostRef : null}>
               <div className="post-header">
               <p className="post-date">{new Date(post.date).toLocaleString()}</p>
-              {getUserInfo(post.SenderId)?.image && (
+              {getUserInfo(post.SenderId)?.image && !getUserInfo(post.SenderId)?.image.startsWith('http') && (
               <img src={`http://localhost:3000/${getUserInfo(post.SenderId)?.image}`} alt="User" className="user-avatar" />
+              )}
+              {getUserInfo(post.SenderId)?.image && getUserInfo(post.SenderId)?.image.startsWith('http') && (
+              <img src={`${getUserInfo(post.SenderId)?.image}`} alt="User" className="user-avatar" />
               )}
               <h3 className="post-user">{getUserInfo(post.SenderId)?.name || "Unknown User"}</h3>
                </div>
