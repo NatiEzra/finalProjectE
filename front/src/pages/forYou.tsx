@@ -5,19 +5,29 @@ import { refreshAccessToken } from "../util/auth";
 const SongRecommendations: React.FC = () => {
   const [recommendations, setRecommendations] = useState<string[]>([]);
   const userId = localStorage.getItem("id");
-  const token = localStorage.getItem("accessToken");
-  useEffect(() => {
-    refreshAccessToken(); 
-  }, []);
+  var token = localStorage.getItem("accessToken");
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/restApi/recommendations/${userId}`,{
+        var response = await fetch(`http://localhost:3000/restApi/recommendations/${userId}`,{
             method: "GET",
             headers: {
                 Authorization: `JWT ${token}`,
             },
       });
+        if (response.status === 401) {
+          console.warn("Access token expired. Refreshing...");
+      
+          const refreshSuccess = await refreshAccessToken();
+          token = localStorage.getItem("accessToken");
+          response = await fetch(`http://localhost:3000/restApi/recommendations/${userId}`,{
+            method: "GET",
+            headers: {
+                Authorization: `JWT ${token}`,
+            },
+         });
+          
+        }
         const data = await response.json();
         setRecommendations(data.recommendations);
       } catch (error) {

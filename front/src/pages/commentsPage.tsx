@@ -43,7 +43,7 @@ const CommentsPage: React.FC = () => {
 
   // Fetch the post
   useEffect(() => {
-    refreshAccessToken(); // Refresh the token when the page loads.
+    //refreshAccessToken(); // Refresh the token when the page loads.
     const fetchPost = async () => {
       try {
         const response = await fetch(`http://localhost:3000/posts/${postId}`);
@@ -114,7 +114,7 @@ const CommentsPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/comments/`, {
+      var response = await fetch(`http://localhost:3000/comments/`, {
         method: "POST",
         headers: {
           Authorization: `JWT ${token}`,
@@ -126,8 +126,28 @@ const CommentsPage: React.FC = () => {
           userId,
         }),
       });
+      if (response.status === 401) {
+                console.warn("Access token expired. Refreshing...");
+            
+                const refreshSuccess = await refreshAccessToken();
+                const token = localStorage.getItem("accessToken");
+                response = await fetch(`http://localhost:3000/comments/`, {
+                  method: "POST",
+                  headers: {
+                    Authorization: `JWT ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    postId,
+                    content: newComment,
+                    userId,
+                  }),
+                });
+                
+      }
 
       const result = await response.json();
+      
 
       if (response.ok) {
         setComments((prevComments) => [result, ...prevComments]); // Add new comment to top
@@ -154,7 +174,7 @@ const CommentsPage: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append("content", editCommentContent);
-      const response = await fetch(`http://localhost:3000/comments/${commentId}`, {
+      var response = await fetch(`http://localhost:3000/comments/${commentId}`, {
         method: "PUT",
         headers: {
           Authorization: `JWT ${token}`,
@@ -164,6 +184,22 @@ const CommentsPage: React.FC = () => {
           content: editCommentContent
         }),
       });
+      if (response.status === 401) {
+                console.warn("Access token expired. Refreshing...");
+                const refreshSuccess = await refreshAccessToken();
+                const token = localStorage.getItem("accessToken");
+                response = await fetch(`http://localhost:3000/comments/${commentId}`, {
+                  method: "PUT",
+                  headers: {
+                    Authorization: `JWT ${token}`,
+                    "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({
+                    content: editCommentContent
+                  }),
+                });
+                
+              }
 
       const result = await response.json();
 
@@ -185,12 +221,24 @@ const CommentsPage: React.FC = () => {
       alert("You must be logged in to delete a comment.");
       return;
     }
-    const response = await fetch(`http://localhost:3000/comments/${commentId}`, {
+    var response = await fetch(`http://localhost:3000/comments/${commentId}`, {
       method: "DELETE",
       headers: {
         Authorization: `JWT ${token}`,
       },
     });
+    if (response.status === 401) {
+      console.warn("Access token expired. Refreshing...");
+      const refreshSuccess = await refreshAccessToken();
+      const token = localStorage.getItem("accessToken");
+      response = await fetch(`http://localhost:3000/comments/${commentId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `JWT ${token}`,
+        },
+      });
+      
+    }
     if (response.ok) {
       setComments(comments.filter((comment) => comment._id !== commentId));
     } else {

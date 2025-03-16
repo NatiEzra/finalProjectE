@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../css/myProfile.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { refreshAccessToken } from "../util/auth";
 
 const userId = localStorage.getItem("id");
 const token = localStorage.getItem("accessToken");
@@ -52,13 +53,27 @@ else{
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/auth/edit`, {
+      var response = await fetch(`http://localhost:3000/auth/edit`, {
         method: "PUT",
         headers: {
           Authorization: `JWT ${token}`,
         },
         body: formDataToSend,
       });
+      if (response.status === 401) {
+              console.warn("Access token expired. Refreshing...");
+          
+              const refreshSuccess = await refreshAccessToken();
+              const token = localStorage.getItem("accessToken");
+              response = await fetch(`http://localhost:3000/auth/edit`, {
+                method: "PUT",
+                headers: {
+                  Authorization: `JWT ${token}`,
+                },
+                body: formDataToSend,
+              });
+                      
+            }
 
       const result = await response.json();
       if (response.ok) {

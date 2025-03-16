@@ -10,9 +10,7 @@ const CreatePostPage: React.FC = () => {
     content: "",
   });
 
-  useEffect(() => {
-    refreshAccessToken(); 
-  }, []);
+  
 
   const userId = localStorage.getItem("id");
   const token = localStorage.getItem("accessToken"); 
@@ -39,13 +37,26 @@ const CreatePostPage: React.FC = () => {
     
 
     try {
-      const response = await fetch("http://localhost:3000/posts/", {
+      var response = await fetch("http://localhost:3000/posts/", {
         method: "POST",
         headers: {
           Authorization: `JWT ${token}`,
         },
         body: postDataToSend,
       });
+      if (response.status === 401) {
+            console.warn("Access token expired. Refreshing..."); 
+            const refreshSuccess = await refreshAccessToken();
+            const token = localStorage.getItem("accessToken");
+            response = await fetch("http://localhost:3000/posts/", {
+              method: "POST",
+              headers: {
+                Authorization: `JWT ${token}`,
+              },
+              body: postDataToSend,
+              });
+                      
+            }
 
       const result = await response.json();
       if (response.ok) {

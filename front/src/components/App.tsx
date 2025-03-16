@@ -17,10 +17,10 @@ import { startTokenRefresh, stopTokenRefresh, handleAuthLogout } from "../util/a
 const App: React.FC = () => {
 
   useEffect(() => {
-    startTokenRefresh(); // ✅ Start automatic token refreshing when the app loads
+    //startTokenRefresh(); // ✅ Start automatic token refreshing when the app loads
 
     return () => {
-      stopTokenRefresh(); // ✅ Stop token refreshing when the component unmounts
+      //stopTokenRefresh(); // ✅ Stop token refreshing when the component unmounts
     };
   }, []);
 
