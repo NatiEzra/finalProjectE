@@ -36,9 +36,7 @@ const [editTitle, setEditTitle] = useState("");
 const [editContent, setEditContent] = useState("");
 const [imageFile, setImageFile] = useState<File | null>(null);
 
- useEffect(() => {
-    refreshAccessToken(); 
-  }, []);
+
 
 
 const handleEditPost = async () => {
@@ -56,14 +54,26 @@ const handleEditPost = async () => {
     formData.append("title", editTitle);
     formData.append("content", editContent);
     if (imageFile) formData.append("image", imageFile);
-      const response = await fetch(`http://localhost:3000/posts/${editPostId}`, {
+      var response = await fetch(`http://localhost:3000/posts/${editPostId}`, {
       method: "PUT",
       headers: {
         Authorization: `JWT ${token}`,
       },
       body: formData
     });
-
+    if (response.status === 401) {
+      console.warn("Access token expired. Refreshing..."); 
+      const refreshSuccess = await refreshAccessToken();
+      const token = localStorage.getItem("accessToken");
+      response = await fetch(`http://localhost:3000/posts/${editPostId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `JWT ${token}`,
+        },
+        body: formData
+      });
+                
+    }
 
 const result=await response.json();
     if (response.ok) {
@@ -98,12 +108,24 @@ const result=await response.json();
     }
   
     try {
-      const response = await fetch(`http://localhost:3000/posts/${postId}`, {
+      var response = await fetch(`http://localhost:3000/posts/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `JWT ${token}`,
         },
       });
+      if (response.status === 401) {
+        console.warn("Access token expired. Refreshing..."); 
+        const refreshSuccess = await refreshAccessToken();
+        const token = localStorage.getItem("accessToken");
+        response = await fetch(`http://localhost:3000/posts/${postId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `JWT ${token}`,
+          },
+        });
+                  
+      }
   
       if (response.ok) {
         alert("Post deleted successfully!");
@@ -214,13 +236,27 @@ const result=await response.json();
     }
   
     try {
-        const response = await fetch(`http://localhost:3000/posts/like/${postId}`, {
+        var response = await fetch(`http://localhost:3000/posts/like/${postId}`, {
             method: "POST",
             headers: {
                 Authorization: `JWT ${token}`,
                 "Content-Type": "application/json",
             },
         });
+        if (response.status === 401) {
+          console.warn("Access token expired. Refreshing..."); 
+          const refreshSuccess = await refreshAccessToken();
+          const token = localStorage.getItem("accessToken");
+          response = await fetch(`http://localhost:3000/posts/like/${postId}`, {
+            method: "POST",
+            headers: {
+                Authorization: `JWT ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+                    
+        }
+        
 
         const result = await response.json(); // לוודא שהתשובה תמיד מנותחת
 
@@ -236,13 +272,26 @@ const result=await response.json();
         if (result.message === "User already liked this post") {
             console.log("User already liked, trying to unlike...");
 
-            const response2 = await fetch(`http://localhost:3000/posts/unlike/${postId}`, {
+            var response2 = await fetch(`http://localhost:3000/posts/unlike/${postId}`, {
                 method: "POST",
                 headers: {
                     Authorization: `JWT ${token}`,
                     "Content-Type": "application/json",
                 },
             });
+            if (response2.status === 401) {
+              console.warn("Access token expired. Refreshing..."); 
+              const refreshSuccess = await refreshAccessToken();
+              const token = localStorage.getItem("accessToken");
+              response2 = await fetch(`http://localhost:3000/posts/unlike/${postId}`, {
+                method: "POST",
+                headers: {
+                    Authorization: `JWT ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+                        
+            }
 
             const result2 = await response2.json(); // לוודא שהתשובה מנותחת גם כאן
 
