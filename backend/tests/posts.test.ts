@@ -145,8 +145,8 @@ describe("Posts Tests", () => {
     .post("/posts/like/" + postId)
     .set({ authorization: "JWT " + token });
     expect(response.statusCode).toBe(200);
-    expect(response.body.userLikes.length).toBe(1);
-    expect(response.body.userLikes[0]).toBe(id);
+    expect(response.body.post.userLikes.length).toBe(1);
+    expect(response.body.post.userLikes[0]).toBe(id);
   });
 
   test("Test like post fail", async () => {
@@ -161,7 +161,7 @@ describe("Posts Tests", () => {
     .post("/posts/unlike/" + postId)
     .set({ authorization: "JWT " + token });
     expect(response.statusCode).toBe(200);
-    expect(response.body.userLikes.length).toBe(0);
+    expect(response.body.post.userLikes.length).toBe(0);
   });
 
   test("Test like post fail", async () => {

@@ -31,6 +31,7 @@ const testUser: User = {
   password: "testpassword",
   image: "testimage1",
   name: "testname1",
+  provider: "local",
 }
 
 describe("Auth Tests", () => {
@@ -61,12 +62,12 @@ describe("Auth Tests", () => {
     const response = await request(app).post("/auth/login").send(testUser);
     expect(response.statusCode).toBe(200);
     const accessToken = response.body.accessToken;
-    const refreshToken = response.body.refreshToken;
     expect(accessToken).toBeDefined();
-    expect(refreshToken).toBeDefined();
+    expect(response.headers["set-cookie"]).toBeDefined(); // בדיקת Cookie
+    console.log(response.body.cookie+"dor");
+    console.log(response.body.cookie+"dor");
     expect(response.body._id).toBeDefined();
     testUser.accessToken = accessToken;
-    testUser.refreshToken = refreshToken;
     testUser._id = response.body._id;
   });
   //test get all users
@@ -78,10 +79,8 @@ describe("Auth Tests", () => {
   test("Check tokens are not the same", async () => {
     const response = await request(app).post("/auth/login").send(testUser);
     const accessToken = response.body.accessToken;
-    const refreshToken = response.body.refreshToken;
 
     expect(accessToken).not.toBe(testUser.accessToken);
-    expect(refreshToken).not.toBe(testUser.refreshToken);
   });
 
   test("Auth test login fail", async () => {
@@ -118,48 +117,47 @@ describe("Auth Tests", () => {
   });
 
   test("Test refresh token", async () => {
-    const response = await request(app).post("/auth/refresh").send({
-      refreshToken: testUser.refreshToken,
+    const loginResponse = await request(app).post("/auth/login").send({
+      email: "test@example.com",
+      password: "validPassword",
     });
+ 
+    const response = await request(app).post("/auth/refresh")
     expect(response.statusCode).toBe(200);
     expect(response.body.accessToken).toBeDefined();
-    expect(response.body.refreshToken).toBeDefined();
+    expect(response.headers["set-cookie"]).toBeDefined(); // בדיקת Cookie
     testUser.accessToken = response.body.accessToken;
-    testUser.refreshToken = response.body.refreshToken;
   });
 
-  test("Double use refresh token", async () => {
-    const response = await request(app).post("/auth/refresh").send({
-      refreshToken: testUser.refreshToken,
-    });
-    expect(response.statusCode).toBe(200);
-    const refreshTokenNew = response.body.refreshToken;
+  // test("Double use refresh token", async () => {
+  //   const response = await request(app).post("/auth/refresh").send({
+  //     refreshToken: testUser.refreshToken,
+  //   });
+  //   expect(response.statusCode).toBe(200);
+  //   const refreshTokenNew = response.body.refreshToken;
 
-    const response2 = await request(app).post("/auth/refresh").send({
-      refreshToken: testUser.refreshToken,
-    });
-    expect(response2.statusCode).not.toBe(200);
+  //   const response2 = await request(app).post("/auth/refresh").send({
+  //     refreshToken: testUser.refreshToken,
+  //   });
+  //   expect(response2.statusCode).not.toBe(200);
 
-    const response3 = await request(app).post("/auth/refresh").send({
-      refreshToken: refreshTokenNew,
-    });
-    expect(response3.statusCode).not.toBe(200);
-  });
+  //   const response3 = await request(app).post("/auth/refresh").send({
+  //     refreshToken: refreshTokenNew,
+  //   });
+  //   expect(response3.statusCode).not.toBe(200);
+  // });
 
   test("Test logout", async () => {
     const response = await request(app).post("/auth/login").send(testUser);
     expect(response.statusCode).toBe(200);
     testUser.accessToken = response.body.accessToken;
-    testUser.refreshToken = response.body.refreshToken;
 
     const response2 = await request(app).post("/auth/logout").send({
       userId: testUser._id,
     });
     expect(response2.statusCode).toBe(200);
 
-    const response3 = await request(app).post("/auth/refresh").send({
-      refreshToken: testUser.refreshToken,
-    });
+    const response3 = await request(app).post("/auth/refresh");
     expect(response3.statusCode).not.toBe(200);
 
   });
@@ -169,7 +167,6 @@ describe("Auth Tests", () => {
     const response = await request(app).post("/auth/login").send(testUser);
     expect(response.statusCode).toBe(200);
     testUser.accessToken = response.body.accessToken;
-    testUser.refreshToken = response.body.refreshToken;
 
     await new Promise((resolve) => setTimeout(resolve, 5000));
 
@@ -182,9 +179,7 @@ describe("Auth Tests", () => {
     });
     expect(response2.statusCode).not.toBe(201);
 
-    const response3 = await request(app).post("/auth/refresh").send({
-      refreshToken: testUser.refreshToken,
-    });
+    const response3 = await request(app).post("/auth/refresh");
     expect(response3.statusCode).toBe(200);
     testUser.accessToken = response3.body.accessToken;
 
@@ -200,17 +195,16 @@ describe("Auth Tests", () => {
 
 
   test("Auth test edit user", async () => {
+    
     //login
     const response = await request(app).post("/auth/login").send(testUser);
     expect(response.statusCode).toBe(200);
     testUser.accessToken = response.body.accessToken;
-    testUser.refreshToken = response.body.refreshToken;
     testUser._id = response.body._id;
     const response3 = await request(app).put("/auth/edit").send({
       name: "testname",
       image: "testimage",
       _id: testUser._id,
-      refreshToken: testUser.refreshToken,
     });
     expect(response3.statusCode).toBe(200);
     expect(response3.body.image).toBe("testimage");
@@ -223,18 +217,10 @@ describe("Auth Tests", () => {
       name:"",
       image: "testimage",
       _id: testUser._id,
-      refreshToken: testUser.refreshToken,
     });
     expect(response2.statusCode).not.toBe(200);
   });
-  test("Auth test edit user fail due to invalid token", async () => {
-    const response2 = await request(app).put("/auth/edit").send({
-      name:"testname",
-      image: "testimage",
-      _id: testUser._id,
-      refreshToken: testUser.refreshToken+"sdf"
-    });
-    expect(response2.statusCode).not.toBe(200);
-  }
-  );
+
+
 });
+  

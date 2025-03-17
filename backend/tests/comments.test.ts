@@ -78,7 +78,7 @@ describe("Comments Tests", () => {
     commentId = response.body._id;
   });
 
-  test("Test get comment by userId", async () => {
+  test("Test get comment by Id", async () => {
     const response = await request(app).get("/comments?owner=" + "Test userId");
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
@@ -87,7 +87,7 @@ describe("Comments Tests", () => {
     expect(response.body[0].userId).toBe("Test userId");
   });
 
-  test("Comments get post by id", async () => {
+  test("Comments get post by id by filter", async () => {
     const response = await request(app).get("/comments/" + commentId);
     expect(response.statusCode).toBe(200);
     expect(response.body.postId).toBe("Test PostId");
@@ -96,8 +96,17 @@ describe("Comments Tests", () => {
   });
 
 
-  test("Comments get by post id", async () => {
+  test("Comments get by post id by filter", async () => {
     const response = await request(app).get("/comments?postId=Test PostId");
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(1);
+    expect(response.body[0].postId).toBe("Test PostId");
+    expect(response.body[0].content).toBe("Test Content");
+    expect(response.body[0].userId).toBe("Test userId");
+  });
+
+  test("Comments get by post id", async () => {
+    const response = await request(app).get("/comments/post/Test PostId");
     expect(response.statusCode).toBe(200);
     expect(response.body.length).toBe(1);
     expect(response.body[0].postId).toBe("Test PostId");
@@ -124,5 +133,7 @@ describe("Comments Tests", () => {
     });
     expect(response.statusCode).not.toBe(200);
   });
+
+
   
 });

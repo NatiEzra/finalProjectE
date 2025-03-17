@@ -226,6 +226,7 @@ const refresh = async (req: Request, res: Response) => {
     try {
         const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) {
+            console.log("no token");
             res.status(400).send("fail");
             return;
         }
@@ -267,11 +268,8 @@ const edit = async (req: Request, res: Response) => {
             res.status(402).send("fail");
             return;
         }
-        if (!user.refreshToken || user.refreshToken.length === 0) {
-            res.status(401).send("fail");
-            return;
-        }
-        var refreshToken = user.refreshToken[0];
+        var refreshToken = req.cookies.refreshToken;
+
         if (await verifyRefreshToken(refreshToken)){
             //user.set(req.body);
             //user.image=req.body.image;
