@@ -64,12 +64,15 @@ html, body {
   font-size: 18px; /* Increased font size */
   font-weight: bold;
   color: #FFA500; /* Match the orange color */
+  align-content:center;
+  padding-left: 1rem;
 }
 
 .post-content {
   margin: 10px 0;
   font-size: 16px; /* Increased font size */
   color: #333;
+  word-wrap: break-word;
 }
 
 .post-image {
@@ -108,4 +111,13 @@ html, body {
     object-fit: cover;
     margin-bottom: 20px;
 }
+.post-header{
+  justify-content: space-between;
+}
 
+.name\+image{
+  display: flex;
+}
+.post-title{
+  word-wrap: break-word;
+}

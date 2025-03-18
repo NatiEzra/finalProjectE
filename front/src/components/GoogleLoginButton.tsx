@@ -49,10 +49,10 @@ const GoogleLoginButton = () => {
   
         // Store user session in localStorage
         localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("email", data.user.email);
-        localStorage.setItem("name", data.user.name);
-        localStorage.setItem("image", data.user.image);
-        localStorage.setItem("id", data.user._id);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("name", data.name);
+        localStorage.setItem("image", data.image);
+        localStorage.setItem("id", data._id);
         localStorage.setItem("provider", "google");
   
         // Redirect to home or dashboard

@@ -6,7 +6,7 @@
 }
 
 /* 📰 Post Card */
-.post-card {
+.post-card2 {
   position: sticky; /* Keeps the post visible while scrolling comments */
   top: 60px; /* Adjust based on navbar height */
   z-index: 999; /* Ensure it stays above the comments */
@@ -19,11 +19,12 @@
   font-size: 20px;
 }
 
-.post-header {
+.post-header2 {
   display: flex;
   align-items: center;
   gap: 15px;
   margin-bottom: 15px;
+  justify-content: left;
 }
 
 .post-image {
