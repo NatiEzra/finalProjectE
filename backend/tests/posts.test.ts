@@ -61,6 +61,21 @@ describe("Posts Tests", () => {
     expect(response.body.SenderId).toBe("TestSenderId-1");
     postId = response.body._id;
   });
+  //test create post after deleting process env token secret
+  test("Test Create Post fail", async () => {
+    const secret=process.env.TOKEN_SECRET;
+    process.env.TOKEN_SECRET = "";
+    const response = await request(app).post("/posts")
+    .set({ authorization: "JWT " + token })
+    .send({
+      title: "Test Post-1",
+      content: "Test Content-1",
+      SenderId: "TestSenderId-1",
+      userLikes: [],
+    });
+    expect(response.statusCode).not.toBe(201);
+    process.env.TOKEN_SECRET = secret;
+  });
 
 
   test("Test Update Post", async () => {
