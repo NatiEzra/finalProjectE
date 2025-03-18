@@ -37,8 +37,6 @@ const [editContent, setEditContent] = useState("");
 const [imageFile, setImageFile] = useState<File | null>(null);
 
 
-
-
 const handleEditPost = async () => {
   if (!editPostId) return;
   const token = localStorage.getItem("accessToken");

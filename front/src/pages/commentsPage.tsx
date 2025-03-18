@@ -150,7 +150,7 @@ const CommentsPage: React.FC = () => {
       
 
       if (response.ok) {
-        setComments((prevComments) => [result, ...prevComments]); // Add new comment to top
+        setComments((prevComments) => [ ...prevComments, result]);
         setNewComment(""); // Clear input
       } else {
         alert("Failed to add comment: " + (result.message || "Unknown error"));

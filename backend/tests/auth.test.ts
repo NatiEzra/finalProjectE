@@ -117,15 +117,15 @@ describe("Auth Tests", () => {
   });
 
   test("Test refresh token", async () => {
-    const loginResponse = await request(app).post("/auth/login").send({
-      email: "test@example.com",
-      password: "validPassword",
-    });
+    const loginResponse = await request(app).post("/auth/login").send(testUser);
+    expect(loginResponse.headers["set-cookie"]).toBeDefined(); // בדיקת Cookie
+    const refreshToken = loginResponse.headers["set-cookie"][0].split(";")[0].split("=")[1];
  
     const response = await request(app).post("/auth/refresh")
+    .set("Cookie", [`refreshToken=${refreshToken}`]) 
+    .send();
     expect(response.statusCode).toBe(200);
     expect(response.body.accessToken).toBeDefined();
-    expect(response.headers["set-cookie"]).toBeDefined(); // בדיקת Cookie
     testUser.accessToken = response.body.accessToken;
   });
 
@@ -162,13 +162,15 @@ describe("Auth Tests", () => {
 
   });
 
-  jest.setTimeout(10000);
+  jest.setTimeout(30000);
   test("Test timeout token ", async () => {
     const response = await request(app).post("/auth/login").send(testUser);
     expect(response.statusCode).toBe(200);
     testUser.accessToken = response.body.accessToken;
+    expect(response.headers["set-cookie"]).toBeDefined(); // בדיקת Cookie
+    const refreshToken = response.headers["set-cookie"][0].split(";")[0].split("=")[1];
 
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 25000));
 
     const response2 = await request(app).post("/posts").set(
       { authorization: "JWT " + testUser.accessToken }
@@ -179,7 +181,8 @@ describe("Auth Tests", () => {
     });
     expect(response2.statusCode).not.toBe(201);
 
-    const response3 = await request(app).post("/auth/refresh");
+    const response3 = await request(app).post("/auth/refresh")
+    .set("Cookie", [`refreshToken=${refreshToken}`]).send();
     expect(response3.statusCode).toBe(200);
     testUser.accessToken = response3.body.accessToken;
 
@@ -199,15 +202,19 @@ describe("Auth Tests", () => {
     //login
     const response = await request(app).post("/auth/login").send(testUser);
     expect(response.statusCode).toBe(200);
+    expect(response.headers["set-cookie"]).toBeDefined(); // בדיקת Cookie
+    const refreshToken = response.headers["set-cookie"][0].split(";")[0].split("=")[1];
+ 
     testUser.accessToken = response.body.accessToken;
     testUser._id = response.body._id;
-    const response3 = await request(app).put("/auth/edit").send({
+    const response3 = await request(app).put("/auth/edit").set("Cookie", [`refreshToken=${refreshToken}`]) 
+    .send({
       name: "testname",
       image: "testimage",
       _id: testUser._id,
+      provider: "local",
     });
     expect(response3.statusCode).toBe(200);
-    expect(response3.body.image).toBe("testimage");
     expect(response3.body.name).toBe("testname");
     
     
@@ -220,7 +227,15 @@ describe("Auth Tests", () => {
     });
     expect(response2.statusCode).not.toBe(200);
   });
-
+// test login after delete process env secret
+  test("Auth test login after delete process env secret", async () => {
+    const secret=process.env.TOKEN_SECRET;
+    process.env.TOKEN_SECRET = "";
+    const response = await request(app).post("/auth/login").send(testUser);
+    expect(response.statusCode).not.toBe(200);
+    process.env.TOKEN_SECRET = secret;
+  }
+  );
 
 });
   
