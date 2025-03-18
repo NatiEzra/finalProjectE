@@ -52,6 +52,7 @@ html, body {
 }
 
 .post-card {
+  position:static !important;
   background: #fff;
   padding: 20px; /* Increased padding to match profile card */
   margin-bottom: 20px; /* Increased margin to match profile card */
@@ -107,5 +108,4 @@ html, body {
     object-fit: cover;
     margin-bottom: 20px;
 }
-
 
