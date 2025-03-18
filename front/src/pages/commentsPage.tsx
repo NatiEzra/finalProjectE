@@ -269,7 +269,7 @@ const CommentsPage: React.FC = () => {
     <div className="comments-container">
       {/* Post Display */}
       {post && (
-        <div className="post-card">
+        <div className="post-card2">
           <div className="post-header">
             {postSender?.image ? (
               <img src={`http://localhost:3000/${postSender.image}`} alt="User" className="user-avatar" />

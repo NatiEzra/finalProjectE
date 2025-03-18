@@ -327,7 +327,7 @@ const result=await response.json();
           posts.map((post, index) => (
             <div key={post._id} className="post-card" ref={index === posts.length - 1 ? lastPostRef : null}>
               <div className="post-header">
-              <p className="post-date">{new Date(post.date).toLocaleString()}</p>
+              <div className="name+image">
               {getUserInfo(post.SenderId)?.image && !getUserInfo(post.SenderId)?.image.startsWith('http') && (
               <img src={`http://localhost:3000/${getUserInfo(post.SenderId)?.image}`} alt="User" className="user-avatar" />
               )}
@@ -335,6 +335,8 @@ const result=await response.json();
               <img src={`${getUserInfo(post.SenderId)?.image}`} alt="User" className="user-avatar" />
               )}
               <h3 className="post-user">{getUserInfo(post.SenderId)?.name || "Unknown User"}</h3>
+              </div>
+              <p className="post-date">{new Date(post.date).toLocaleString()}</p>
                </div>
                {filter && (
   <div className="post-actions">
