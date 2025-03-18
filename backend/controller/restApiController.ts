@@ -26,24 +26,44 @@ const googleAuth = async (req: Request, res: Response) => {
 
     let user = await User.findOne({ email });
     if (!user) {
-      user = new User({ email, name, image: picture, provider: "google" });
+      user = new User({ email, name, image: picture, provider: "google", refreshToken: [] });
       await user.save();
     }
 
     const Tokens = authController.generateToken(user._id);
     if (!Tokens) 
       return res.status(500).json({ error: "Internal Server Error" });
-    const accessToken=Tokens.accessToken;
-    res.json({ accessToken, user });
-    if (!user.refreshToken){
+
+    if (!user.refreshToken) {
       user.refreshToken = [];
     }
     user.refreshToken.push(Tokens.refreshToken);
     await user.save();
+
+    res.cookie("refreshToken", Tokens.refreshToken, {
+      httpOnly: true,  
+      secure: true,    
+      sameSite: "strict", 
+      path: "/auth/refresh",
+      maxAge: 7 * 24 * 60 * 60 * 1000, 
+    });
+
+    return res.status(200).json({
+      accessToken: Tokens.accessToken,
+      _id: user._id,
+      image: user.image,
+      name: user.name,
+      email: user.email
+    });
+
   } catch (error) {
-    res.status(500).json({ error: "Google Authentication Failed" });
+    console.error("Google Auth Error:", error);
+    if (!res.headersSent) {
+      return res.status(500).json({ error: "Google Authentication Failed" });
+    }
   }
 };
+
 
 
 

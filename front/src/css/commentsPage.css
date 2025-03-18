@@ -19,11 +19,12 @@
   font-size: 20px;
 }
 
-.post-header {
+.post-header2 {
   display: flex;
   align-items: center;
   gap: 15px;
   margin-bottom: 15px;
+  justify-content: left;
 }
 
 .post-image {

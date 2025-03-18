@@ -150,7 +150,7 @@ const CommentsPage: React.FC = () => {
       
 
       if (response.ok) {
-        setComments((prevComments) => [ ...prevComments, result]);
+        setComments((prevComments) => [ ...prevComments, result]); // Add new comment to top
         setNewComment(""); // Clear input
       } else {
         alert("Failed to add comment: " + (result.message || "Unknown error"));
@@ -270,12 +270,18 @@ const CommentsPage: React.FC = () => {
       {/* Post Display */}
       {post && (
         <div className="post-card2">
-          <div className="post-header">
-            {postSender?.image ? (
-              <img src={`http://localhost:3000/${postSender.image}`} alt="User" className="user-avatar" />
+          <div className="post-header2">
+          
+          {postSender?.image ? (
+            postSender.image.startsWith("http") ? (
+              <img src={postSender.image} alt="User" className="user-avatar" />
             ) : (
-              <img src="http://localhost:3000/images/default-avatar.png" alt="Default Avatar" className="user-avatar" />
-            )}
+              <img src={`http://localhost:3000/${postSender.image}`} alt="User" className="user-avatar" />
+            )
+          ) : (
+            <img src="http://localhost:3000/images/default-avatar.png" alt="Default Avatar" className="user-avatar" />
+          )}
+
             <strong>{postSender?.name || "Unknown User"}</strong>
           </div>
           <h3>{post.title}</h3>
@@ -331,10 +337,17 @@ const CommentsPage: React.FC = () => {
                   </div>
                 )}
                 <img
-                  src={user?.image ? `http://localhost:3000/${user.image}` : "http://localhost:3000/images/default-avatar.png"}
+                  src={
+                    user?.image?
+                     user.image.startsWith("http")?
+                       user.image 
+                        : `http://localhost:3000/${user.image}`
+                      : "http://localhost:3000/images/default-avatar.png"
+                  }
                   alt="User"
                   className="user-avatar"
                 />
+
                 <div className="comment-content">
                   <div className="comment-header">
                     <strong>{user?.name || "Unknown User"}</strong>

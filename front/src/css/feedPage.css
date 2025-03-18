@@ -72,6 +72,7 @@ html, body {
   margin: 10px 0;
   font-size: 16px; /* Increased font size */
   color: #333;
+  word-wrap: break-word;
 }
 
 .post-image {
@@ -116,4 +117,7 @@ html, body {
 
 .name\+image{
   display: flex;
+}
+.post-title{
+  word-wrap: break-word;
 }
